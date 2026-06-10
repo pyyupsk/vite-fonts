@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json.schemastore.org/base.json",
+  "Inter": {
+    "capHeight": 768,
+    "ascent": 1984,
+    "descent": -494,
+    "lineGap": 0,
+    "unitsPerEm": 2048,
+    "xWidthAvg": 961,
+    "category": "sans-serif"
+  },
+  "Roboto": {
+    "capHeight": 710,
+    "ascent": 1900,
+    "descent": -500,
+    "lineGap": 0,
+    "unitsPerEm": 2048,
+    "xWidthAvg": 874,
+    "category": "sans-serif"
+  },
+  "Open Sans": {
+    "capHeight": 714,
+    "ascent": 1069,
+    "descent": -293,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 452,
+    "category": "sans-serif"
+  },
+  "Lato": {
+    "capHeight": 717,
+    "ascent": 1974,
+    "descent": -426,
+    "lineGap": 0,
+    "unitsPerEm": 2000,
+    "xWidthAvg": 878,
+    "category": "sans-serif"
+  },
+  "Poppins": {
+    "capHeight": 686,
+    "ascent": 1050,
+    "descent": -350,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 498,
+    "category": "sans-serif"
+  },
+  "Montserrat": {
+    "capHeight": 700,
+    "ascent": 968,
+    "descent": -251,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 460,
+    "category": "sans-serif"
+  },
+  "Nunito": {
+    "capHeight": 693,
+    "ascent": 1011,
+    "descent": -353,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 468,
+    "category": "sans-serif"
+  },
+  "Raleway": {
+    "capHeight": 710,
+    "ascent": 2126,
+    "descent": -730,
+    "lineGap": 0,
+    "unitsPerEm": 2048,
+    "xWidthAvg": 830,
+    "category": "sans-serif"
+  },
+  "Source Sans Pro": {
+    "capHeight": 660,
+    "ascent": 984,
+    "descent": -273,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 434,
+    "category": "sans-serif"
+  },
+  "Ubuntu": {
+    "capHeight": 694,
+    "ascent": 932,
+    "descent": -189,
+    "lineGap": 28,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 444,
+    "category": "sans-serif"
+  },
+  "Noto Sans": {
+    "capHeight": 735,
+    "ascent": 1069,
+    "descent": -293,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 450,
+    "category": "sans-serif"
+  },
+  "Oswald": {
+    "capHeight": 700,
+    "ascent": 1050,
+    "descent": -300,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 380,
+    "category": "sans-serif"
+  },
+  "Playfair Display": {
+    "capHeight": 685,
+    "ascent": 980,
+    "descent": -310,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 462,
+    "category": "serif"
+  },
+  "Merriweather": {
+    "capHeight": 685,
+    "ascent": 1000,
+    "descent": -280,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 476,
+    "category": "serif"
+  },
+  "Lora": {
+    "capHeight": 670,
+    "ascent": 1004,
+    "descent": -305,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 462,
+    "category": "serif"
+  },
+  "Noto Serif": {
+    "capHeight": 662,
+    "ascent": 1069,
+    "descent": -293,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 455,
+    "category": "serif"
+  },
+  "JetBrains Mono": {
+    "capHeight": 730,
+    "ascent": 1020,
+    "descent": -300,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 600,
+    "category": "monospace"
+  },
+  "Fira Code": {
+    "capHeight": 750,
+    "ascent": 900,
+    "descent": -300,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 600,
+    "category": "monospace"
+  },
+  "Space Mono": {
+    "capHeight": 700,
+    "ascent": 1000,
+    "descent": -200,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 600,
+    "category": "monospace"
+  },
+  "Inconsolata": {
+    "capHeight": 690,
+    "ascent": 960,
+    "descent": -240,
+    "lineGap": 0,
+    "unitsPerEm": 1000,
+    "xWidthAvg": 520,
+    "category": "monospace"
+  }
+}

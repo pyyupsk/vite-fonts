@@ -53,4 +53,34 @@ describe('generateCss', () => {
     const css = generateCss(families, { inter: INTER_FILES }, ASSET_MAP)
     expect(css).toContain('@theme inline')
   })
+
+  it('includes sidecar @font-face when adjustFontFallback: true', () => {
+    const { families } = normalize('Inter')
+    const adjusted = families.map((f) => ({ ...f, adjustFontFallback: true }))
+    const css = generateCss(adjusted, { inter: INTER_FILES }, ASSET_MAP)
+    expect(css).toContain("font-family: 'Inter Fallback'")
+    expect(css).toContain("src: local('Arial')")
+    expect(css).toContain('size-adjust:')
+  })
+
+  it('includes sidecar @font-face when adjustFontFallback is string', () => {
+    const { families } = normalize('Inter')
+    const adjusted = families.map((f) => ({ ...f, adjustFontFallback: 'Arial' }))
+    const css = generateCss(adjusted, { inter: INTER_FILES }, ASSET_MAP)
+    expect(css).toContain("font-family: 'Inter Fallback'")
+  })
+
+  it(':root var includes fallback family when adjustFontFallback set', () => {
+    const { families } = normalize('Inter')
+    const adjusted = families.map((f) => ({ ...f, adjustFontFallback: true }))
+    const css = generateCss(adjusted, { inter: INTER_FILES }, ASSET_MAP)
+    expect(css).toContain("'Inter Fallback'")
+    expect(css).toContain(':root')
+  })
+
+  it('no sidecar @font-face when adjustFontFallback: false', () => {
+    const { families } = normalize('Inter')
+    const css = generateCss(families, { inter: INTER_FILES }, ASSET_MAP)
+    expect(css).not.toContain('Inter Fallback')
+  })
 })
