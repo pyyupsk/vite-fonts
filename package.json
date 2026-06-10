@@ -20,13 +20,12 @@
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "check": "bun run lint && bun run format:check",
     "format": "oxfmt .",
     "format:check": "oxfmt . --check",
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
-    "postbuild": "cp src/client.d.ts dist/client.d.ts",
     "prepare": "nit install",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -39,7 +38,7 @@
     "@types/bun": "latest",
     "oxfmt": "^0.54.0",
     "oxlint": "^1.69.0",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.22.2",
     "vitest": "^4.1.8"
   },
   "peerDependencies": {
