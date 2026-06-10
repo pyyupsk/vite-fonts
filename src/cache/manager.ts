@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { hashConfig } from '@/config/hash'
+import { getLogger } from '@/logger'
 import { buildGoogleFontsUrl, parseGoogleFontsCss } from '@/sources/google'
 import type { FontsConfig, FontSource, NormalizedFamily } from '@/types'
 
@@ -43,7 +44,10 @@ async function downloadFamily(
   family: NormalizedFamily,
   cacheDir: string,
 ): Promise<[Error, null] | [null, string[]]> {
+  const logger = getLogger()
   const url = buildGoogleFontsUrl(family)
+
+  logger.info(`Downloading "${family.family}" from Google Fonts...`)
 
   let css: string
   try {
@@ -72,6 +76,7 @@ async function downloadFamily(
     if (!written.includes(file.filename)) written.push(file.filename)
   }
 
+  logger.info(`"${family.family}" cached (${written.length} files)`)
   return [null, written]
 }
 
@@ -83,12 +88,16 @@ export async function ensureFonts(
   mkdirSync(cacheDir, { recursive: true })
 
   const manifest: CacheManifest = readManifest(cacheDir) ?? { version: 1, families: {} }
+  const logger = getLogger()
 
   for (const family of families) {
     const hash = familyHash(family, source)
     const cached = manifest.families[family.key]
 
-    if (cached?.hash === hash) continue
+    if (cached?.hash === hash) {
+      logger.info(`"${family.family}" loaded from cache`)
+      continue
+    }
 
     const [err, files] = await downloadFamily(family, cacheDir)
     if (err) return [err, null]
