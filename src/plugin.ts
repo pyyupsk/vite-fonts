@@ -7,6 +7,7 @@ import type { FontsInput } from '@/types'
 
 import { handleBuildStart } from './hooks/build-start'
 import { handleConfigResolved } from './hooks/config-resolved'
+import { handleGenerateBundle } from './hooks/generate-bundle'
 import { handleLoad, handleLoadMeta } from './hooks/load'
 import { handleResolveId } from './hooks/resolve-id'
 import { createPluginState } from './hooks/state'
@@ -42,8 +43,12 @@ export function fonts(input: FontsInput): Plugin {
       },
     },
 
-    load(id) {
-      return handleLoad(id, state) ?? handleLoadMeta(id, state)
+    async load(id) {
+      return (await handleLoad(id, state, this)) ?? handleLoadMeta(id, state)
+    },
+
+    generateBundle(options, bundle) {
+      handleGenerateBundle.call(this, options, bundle, state)
     },
 
     transformIndexHtml() {

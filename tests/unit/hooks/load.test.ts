@@ -16,6 +16,8 @@ const INTER_FILES: FontFile[] = [
   },
 ]
 
+const CTX = {} as Parameters<typeof handleLoad>[2] // nosonar - minimal stub; dev-mode load never calls emitFile
+
 function makeState(command: 'serve' | 'build' = 'serve'): PluginState {
   const { families, source, inject } = normalize('Inter')
   return {
@@ -24,43 +26,44 @@ function makeState(command: 'serve' | 'build' = 'serve'): PluginState {
     root: '/tmp',
     command,
     filesMap: { inter: INTER_FILES },
+    assetRefIds: {},
   }
 }
 
 describe('handleLoad', () => {
-  it('returns null for unrelated ids', () => {
-    const result = handleLoad('./foo.ts', makeState())
+  it('returns null for unrelated ids', async () => {
+    const result = await handleLoad('./foo.ts', makeState(), CTX)
     expect(result).toBeNull()
   })
 
-  it('returns CSS string for resolved font id (dev)', () => {
-    const css = handleLoad(RESOLVED_ID, makeState('serve'))
+  it('returns CSS string for resolved font id (dev)', async () => {
+    const css = await handleLoad(RESOLVED_ID, makeState('serve'), CTX)
     expect(typeof css).toBe('string')
     expect(css).toContain('@font-face')
     expect(css).toContain('Inter')
   })
 
-  it('dev CSS uses /__fonts/ paths', () => {
-    const css = handleLoad(RESOLVED_ID, makeState('serve')) as string
+  it('dev CSS uses /__fonts/ paths', async () => {
+    const css = await handleLoad(RESOLVED_ID, makeState('serve'), CTX)
     expect(css).toContain('/__fonts/')
   })
 
-  it('includes :root and @theme blocks', () => {
-    const css = handleLoad(RESOLVED_ID, makeState('serve')) as string
+  it('includes :root and @theme blocks', async () => {
+    const css = await handleLoad(RESOLVED_ID, makeState('serve'), CTX)
     expect(css).toContain(':root')
     expect(css).toContain('--font-inter')
     expect(css).toContain('@theme inline')
   })
 
-  it('returns null for meta id (handled separately)', () => {
-    const result = handleLoad(META_RESOLVED_ID, makeState())
+  it('returns null for meta id (handled separately)', async () => {
+    const result = await handleLoad(META_RESOLVED_ID, makeState(), CTX)
     expect(result).toBeNull()
   })
 
-  it('returns null when filesMap is empty', () => {
+  it('returns null when filesMap is empty', async () => {
     const state = makeState()
     state.filesMap = {}
-    const css = handleLoad(RESOLVED_ID, state) as string
+    const css = await handleLoad(RESOLVED_ID, state, CTX)
     expect(css).toContain(':root')
   })
 })

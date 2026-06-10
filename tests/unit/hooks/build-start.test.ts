@@ -33,6 +33,7 @@ describe('handleBuildStart', () => {
       root: tmpdir(),
       command: 'serve',
       filesMap: {},
+      assetRefIds: {},
     }
 
     const err = await handleBuildStart(state)
@@ -49,6 +50,7 @@ describe('handleBuildStart', () => {
       root: tmpdir(),
       command: 'serve',
       filesMap: {},
+      assetRefIds: {},
     }
 
     const err = await handleBuildStart(state)

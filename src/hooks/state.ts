@@ -7,6 +7,7 @@ export interface PluginState {
   root: string | null
   command: 'serve' | 'build'
   filesMap: Record<string, FontFile[]>
+  assetRefIds: Record<string, string>
 }
 
 export function createPluginState(): PluginState {
@@ -16,5 +17,6 @@ export function createPluginState(): PluginState {
     root: null,
     command: 'serve',
     filesMap: {},
+    assetRefIds: {},
   }
 }
