@@ -26,6 +26,7 @@
     "format:check": "oxfmt . --check",
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
+    "postbuild": "cp src/client.d.ts dist/client.d.ts",
     "prepare": "nit install",
     "test": "vitest run",
     "test:watch": "vitest",
