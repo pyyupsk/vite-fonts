@@ -1,8 +1,26 @@
 {
   "name": "@pyyupsk/vite-fonts",
+  "version": "0.1.0",
+  "bin": {
+    "vite-fonts": "./dist/cli/index.js"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
-  "module": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts"
+    }
+  },
   "scripts": {
+    "build": "tsup",
     "check": "bun run lint && bun run format:check",
     "format": "oxfmt .",
     "format:check": "oxfmt . --check",
@@ -20,10 +38,12 @@
     "@types/bun": "latest",
     "oxfmt": "^0.54.0",
     "oxlint": "^1.69.0",
+    "tsup": "^8.5.1",
     "vitest": "^4.1.8"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^8.0.0"
   },
   "nit": {
     "hooks": {
