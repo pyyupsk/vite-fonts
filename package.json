@@ -3,7 +3,15 @@
   "module": "src/index.ts",
   "type": "module",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "oxfmt": "^0.54.0",
+    "oxlint": "^1.69.0"
+  },
+  "scripts": {
+    "format": "oxfmt src",
+    "format:check": "oxfmt --check src",
+    "lint": "oxlint src",
+    "lint:fix": "oxlint src --fix"
   },
   "peerDependencies": {
     "typescript": "^5"
