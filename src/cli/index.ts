@@ -1,4 +1,5 @@
 #!/usr/bin/env node
 
-// cli entrypoint — implementation in list.ts and clean.ts
-const _placeholder = true
+import { run } from './list'
+
+run(process.argv.slice(2))
