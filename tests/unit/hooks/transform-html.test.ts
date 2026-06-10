@@ -15,6 +15,7 @@ function makeState(overrides: Partial<PluginState> = {}): PluginState {
   return {
     config: { families, source, inject },
     cacheDir: '/tmp/vite-fonts-test', // nosonar - test-only stub value, no real FS writes
+    root: '/tmp',
     command: 'serve',
     filesMap: { inter: INTER_FILES },
     ...overrides,

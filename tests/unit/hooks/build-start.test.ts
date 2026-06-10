@@ -30,6 +30,7 @@ describe('handleBuildStart', () => {
     const state: PluginState = {
       config: { families, source, inject },
       cacheDir,
+      root: tmpdir(),
       command: 'serve',
       filesMap: {},
     }
@@ -45,6 +46,7 @@ describe('handleBuildStart', () => {
     const state: PluginState = {
       config: { families, source, inject },
       cacheDir: '/nonexistent/path/that/cannot/be/created/xyz',
+      root: tmpdir(),
       command: 'serve',
       filesMap: {},
     }

@@ -21,6 +21,7 @@ function makeState(command: 'serve' | 'build' = 'serve'): PluginState {
   return {
     config: { families, source, inject },
     cacheDir: '/tmp/vite-fonts-test', // nosonar - test-only stub value, no real FS writes
+    root: '/tmp',
     command,
     filesMap: { inter: INTER_FILES },
   }

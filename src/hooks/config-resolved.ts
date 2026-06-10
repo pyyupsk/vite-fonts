@@ -16,5 +16,6 @@ export function handleConfigResolved(
   setLogger(viteConfig.logger)
   state.config = normalize(input)
   state.cacheDir = join(viteConfig.cacheDir, 'fonts')
+  state.root = viteConfig.root
   state.command = viteConfig.command
 }
