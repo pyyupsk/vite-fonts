@@ -9,6 +9,8 @@
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
     "prepare": "nit install",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
@@ -17,7 +19,8 @@
     "@pyyupsk/nit": "^0.3.0",
     "@types/bun": "latest",
     "oxfmt": "^0.54.0",
-    "oxlint": "^1.69.0"
+    "oxlint": "^1.69.0",
+    "vitest": "^4.1.8"
   },
   "peerDependencies": {
     "typescript": "^5"
