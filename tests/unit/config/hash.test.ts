@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { hashConfig } from '../../../src/config/hash'
-import { normalize } from '../../../src/config/normalize'
+import { hashConfig } from '@/config/hash'
+import { normalize } from '@/config/normalize'
 
 describe('hashConfig', () => {
   it('same input produces same hash', () => {

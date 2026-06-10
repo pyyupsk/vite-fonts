@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { normalize } from '../../../src/config/normalize'
+import { normalize } from '@/config/normalize'
 
 describe('normalize', () => {
   it('single string applies all defaults', () => {
