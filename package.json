@@ -1,19 +1,31 @@
 {
   "name": "@pyyupsk/vite-fonts",
-  "module": "src/index.ts",
   "type": "module",
+  "module": "src/index.ts",
+  "scripts": {
+    "check": "bun run lint && bun run format:check",
+    "format": "oxfmt .",
+    "format:check": "oxfmt . --check",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint . --fix",
+    "prepare": "nit install",
+    "typecheck": "tsc --noEmit"
+  },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@pyyupsk/nit": "^0.3.0",
     "@types/bun": "latest",
     "oxfmt": "^0.54.0",
     "oxlint": "^1.69.0"
   },
-  "scripts": {
-    "format": "oxfmt src",
-    "format:check": "oxfmt --check src",
-    "lint": "oxlint src",
-    "lint:fix": "oxlint src --fix"
-  },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "nit": {
+    "hooks": {
+      "pre-commit": "bun run check",
+      "commit-msg": "bunx commitlint --edit $1"
+    }
   }
 }
