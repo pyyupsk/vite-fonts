@@ -10,6 +10,7 @@ import { handleConfigResolved } from './hooks/config-resolved'
 import { handleLoad, handleLoadMeta } from './hooks/load'
 import { handleResolveId } from './hooks/resolve-id'
 import { createPluginState } from './hooks/state'
+import { handleTransformIndexHtml } from './hooks/transform-html'
 
 export type { PluginState } from './hooks/state'
 
@@ -43,6 +44,10 @@ export function fonts(input: FontsInput): Plugin {
 
     load(id) {
       return handleLoad(id, state) ?? handleLoadMeta(id, state)
+    },
+
+    transformIndexHtml() {
+      return handleTransformIndexHtml(state)
     },
 
     configureServer(server) {

@@ -20,7 +20,7 @@ function makeState(command: 'serve' | 'build' = 'serve'): PluginState {
   const { families, source, inject } = normalize('Inter')
   return {
     config: { families, source, inject },
-    cacheDir: '/tmp/vite-fonts-test', // nosonar — test-only, no real FS writes
+    cacheDir: '/tmp/vite-fonts-test', // nosonar - test-only stub value, no real FS writes
     command,
     filesMap: { inter: INTER_FILES },
   }
