@@ -1,9 +1,16 @@
 import { describe, expect, it } from 'vitest'
 
-import { hello } from '@/index'
+import { fonts } from '@/index'
 
-describe('hello', () => {
-  it('returns greeting', () => {
-    expect(hello('world')).toBe('Hello, world!')
+describe('fonts plugin', () => {
+  it('returns a vite plugin object', () => {
+    const plugin = fonts('Inter')
+    expect(plugin).toBeDefined()
+    expect(plugin.name).toBe('vite-fonts')
+  })
+
+  it('accepts array input', () => {
+    const plugin = fonts(['Inter', 'JetBrains Mono'])
+    expect(plugin.name).toBe('vite-fonts')
   })
 })

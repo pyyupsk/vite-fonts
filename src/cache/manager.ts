@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { hashConfig } from '@/config/hash'
 import { getLogger } from '@/logger'
 import { buildGoogleFontsUrl, parseGoogleFontsCss } from '@/sources/google'
+import type { FontFile } from '@/sources/google'
 import type { FontsConfig, FontSource, NormalizedFamily } from '@/types'
 
 import { downloadFont } from './download'
@@ -11,6 +12,7 @@ import { downloadFont } from './download'
 export interface CacheManifestEntry {
   hash: string
   files: string[]
+  fontFiles: FontFile[]
 }
 
 export interface CacheManifest {
@@ -43,7 +45,7 @@ function familyHash(family: NormalizedFamily, source: FontSource): string {
 async function downloadFamily(
   family: NormalizedFamily,
   cacheDir: string,
-): Promise<[Error, null] | [null, string[]]> {
+): Promise<[Error, null] | [null, { files: string[]; fontFiles: FontFile[] }]> {
   const logger = getLogger()
   const url = buildGoogleFontsUrl(family)
 
@@ -77,7 +79,7 @@ async function downloadFamily(
   }
 
   logger.info(`"${family.family}" cached (${written.length} files)`)
-  return [null, written]
+  return [null, { files: written, fontFiles }]
 }
 
 export async function ensureFonts(
@@ -96,13 +98,14 @@ export async function ensureFonts(
 
     if (cached?.hash === hash) {
       logger.info(`"${family.family}" loaded from cache`)
+      if (!cached.fontFiles) cached.fontFiles = []
       continue
     }
 
-    const [err, files] = await downloadFamily(family, cacheDir)
+    const [err, result] = await downloadFamily(family, cacheDir)
     if (err) return [err, null]
 
-    manifest.families[family.key] = { hash, files }
+    manifest.families[family.key] = { hash, files: result.files, fontFiles: result.fontFiles }
   }
 
   writeManifest(cacheDir, manifest)
