@@ -26,6 +26,7 @@ function makeState(command: 'serve' | 'build' = 'serve'): PluginState {
     root: '/tmp',
     command,
     filesMap: { inter: INTER_FILES },
+    metricsMap: {},
     assetRefIds: {},
   }
 }

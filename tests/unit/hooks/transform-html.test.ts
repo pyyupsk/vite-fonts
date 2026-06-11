@@ -18,6 +18,7 @@ function makeState(overrides: Partial<PluginState> = {}): PluginState {
     root: '/tmp',
     command: 'serve',
     filesMap: { inter: INTER_FILES },
+    metricsMap: {},
     assetRefIds: {},
     ...overrides,
   }

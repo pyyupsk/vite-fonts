@@ -4,6 +4,7 @@ import {
   getFallbackMetrics,
   lookupMetrics,
 } from '@/metrics/lookup'
+import type { FontMetrics } from '@/metrics/lookup'
 import type { FontFile } from '@/sources/google'
 import type { NormalizedFamily } from '@/types'
 
@@ -11,19 +12,25 @@ import { buildFallbackFontFace } from './fallback'
 import { buildFontFace } from './font-face'
 import { buildThemeBlock } from './theme'
 
-function resolveFallbackName(family: NormalizedFamily): string | null {
+function resolveFallbackName(
+  family: NormalizedFamily,
+  metricsMap: Record<string, FontMetrics>,
+): string | null {
   if (!family.adjustFontFallback) return null
   if (typeof family.adjustFontFallback === 'string') return family.adjustFontFallback
-  const metrics = lookupMetrics(family.family)
+  const metrics = lookupMetrics(family.family, metricsMap)
   if (!metrics) return null
   return defaultFallbackName(metrics.category)
 }
 
-function buildSidecarFontFace(family: NormalizedFamily): string | null {
-  const fallbackName = resolveFallbackName(family)
+function buildSidecarFontFace(
+  family: NormalizedFamily,
+  metricsMap: Record<string, FontMetrics>,
+): string | null {
+  const fallbackName = resolveFallbackName(family, metricsMap)
   if (!fallbackName) return null
 
-  const webMetrics = lookupMetrics(family.family)
+  const webMetrics = lookupMetrics(family.family, metricsMap)
   const fallbackMetrics = getFallbackMetrics(fallbackName)
   if (!webMetrics || !fallbackMetrics) return null
 
@@ -31,8 +38,8 @@ function buildSidecarFontFace(family: NormalizedFamily): string | null {
   return buildFallbackFontFace(family.family, fallbackName, overrides)
 }
 
-function rootVar(family: NormalizedFamily): string {
-  const fallbackFamilyName = resolveFallbackName(family)
+function rootVar(family: NormalizedFamily, metricsMap: Record<string, FontMetrics>): string {
+  const fallbackFamilyName = resolveFallbackName(family, metricsMap)
   const fallbackStack = [
     ...(fallbackFamilyName ? [`'${family.family} Fallback'`] : []),
     ...family.fallback,
@@ -45,6 +52,7 @@ export function generateCss(
   families: NormalizedFamily[],
   filesMap: Record<string, FontFile[]>,
   assetMap: Record<string, string>,
+  metricsMap: Record<string, FontMetrics> = {},
 ): string {
   const parts: string[] = []
 
@@ -55,11 +63,11 @@ export function generateCss(
       parts.push(buildFontFace(file, assetPath, family.display))
     }
 
-    const sidecar = buildSidecarFontFace(family)
+    const sidecar = buildSidecarFontFace(family, metricsMap)
     if (sidecar) parts.push(sidecar)
   }
 
-  const rootVars = families.map(rootVar).join('\n')
+  const rootVars = families.map((f) => rootVar(f, metricsMap)).join('\n')
   parts.push(`:root {\n${rootVars}\n}`, buildThemeBlock(families))
 
   return parts.filter(Boolean).join('\n\n')

@@ -1,5 +1,3 @@
-import data from './data.json'
-
 export interface FontMetrics {
   capHeight: number
   ascent: number
@@ -54,18 +52,16 @@ const DEFAULT_FALLBACKS: Record<FontMetrics['category'], string> = {
   display: 'Arial',
 }
 
-type DataKey = keyof typeof data
-
 function pct(value: number): string {
   return (Math.round(value * 10000) / 100).toFixed(2) + '%'
 }
 
-export function lookupMetrics(family: string): FontMetrics | null {
-  const key = Object.keys(data).find((k) => k.toLowerCase() === family.toLowerCase()) as
-    | DataKey
-    | undefined
-  if (!key) return null
-  return data[key] as FontMetrics
+export function lookupMetrics(
+  family: string,
+  metricsMap: Record<string, FontMetrics>,
+): FontMetrics | null {
+  const key = Object.keys(metricsMap).find((k) => k.toLowerCase() === family.toLowerCase())
+  return key ? (metricsMap[key] ?? null) : null
 }
 
 export function getFallbackMetrics(name: string): FontMetrics | null {

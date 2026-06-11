@@ -33,6 +33,7 @@ describe('handleBuildStart', () => {
       root: tmpdir(),
       command: 'serve',
       filesMap: {},
+      metricsMap: {},
       assetRefIds: {},
     }
 
@@ -50,6 +51,7 @@ describe('handleBuildStart', () => {
       root: tmpdir(),
       command: 'serve',
       filesMap: {},
+      metricsMap: {},
       assetRefIds: {},
     }
 

@@ -1,5 +1,6 @@
 import { ensureFonts } from '@/cache/manager'
 import { generateDts } from '@/dts/generate'
+import { extractMetrics } from '@/metrics/extract'
 
 import type { PluginState } from './state'
 
@@ -21,6 +22,14 @@ export async function handleBuildStart(state: PluginState): Promise<Error | null
   for (const [key, entry] of Object.entries(manifest.families)) {
     state.filesMap[key] = entry.fontFiles ?? []
   }
+
+  await Promise.all(
+    state.config.families.map(async (family) => {
+      const files = state.filesMap[family.key] ?? []
+      const metrics = await extractMetrics(files, state.cacheDir!)
+      if (metrics) state.metricsMap[family.family] = metrics
+    }),
+  )
 
   const dtsErr = await generateDts(state.config.families, state.root)
   if (dtsErr) return dtsErr

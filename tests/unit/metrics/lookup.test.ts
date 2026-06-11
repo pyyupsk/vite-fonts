@@ -6,10 +6,23 @@ import {
   getFallbackMetrics,
   lookupMetrics,
 } from '@/metrics/lookup'
+import type { FontMetrics } from '@/metrics/lookup'
+
+const INTER: FontMetrics = {
+  capHeight: 768,
+  ascent: 1984,
+  descent: -494,
+  lineGap: 0,
+  unitsPerEm: 2048,
+  xWidthAvg: 961,
+  category: 'sans-serif',
+}
+
+const MAP = { Inter: INTER }
 
 describe('lookupMetrics', () => {
   it('returns metrics for known font', () => {
-    const m = lookupMetrics('Inter')
+    const m = lookupMetrics('Inter', MAP)
     expect(m).not.toBeNull()
     expect(m!.capHeight).toBeGreaterThan(0)
     expect(m!.unitsPerEm).toBeGreaterThan(0)
@@ -17,12 +30,12 @@ describe('lookupMetrics', () => {
   })
 
   it('returns null for unknown font', () => {
-    expect(lookupMetrics('UnknownFontXYZ')).toBeNull()
+    expect(lookupMetrics('UnknownFontXYZ', MAP)).toBeNull()
   })
 
   it('lookup is case-insensitive', () => {
-    expect(lookupMetrics('inter')).not.toBeNull()
-    expect(lookupMetrics('INTER')).not.toBeNull()
+    expect(lookupMetrics('inter', MAP)).not.toBeNull()
+    expect(lookupMetrics('INTER', MAP)).not.toBeNull()
   })
 })
 
@@ -70,9 +83,8 @@ describe('getFallbackMetrics', () => {
 
 describe('computeOverrides', () => {
   it('produces correct overrides for Inter vs Arial', () => {
-    const inter = lookupMetrics('Inter')!
     const arial = getFallbackMetrics('Arial')!
-    const overrides = computeOverrides(inter, arial)
+    const overrides = computeOverrides(INTER, arial)
 
     expect(overrides.sizeAdjust).toMatch(/^\d+\.\d+%$/)
     expect(overrides.ascentOverride).toMatch(/^\d+\.\d+%$/)
@@ -81,19 +93,17 @@ describe('computeOverrides', () => {
   })
 
   it('size-adjust for Inter vs Arial is approximately 107%', () => {
-    const inter = lookupMetrics('Inter')!
     const arial = getFallbackMetrics('Arial')!
-    const overrides = computeOverrides(inter, arial)
+    const overrides = computeOverrides(INTER, arial)
     const value = Number.parseFloat(overrides.sizeAdjust)
     expect(value).toBeGreaterThan(100)
     expect(value).toBeLessThan(115)
   })
 
   it('all override values are non-negative', () => {
-    const inter = lookupMetrics('Inter')!
     const arial = getFallbackMetrics('Arial')!
     const { sizeAdjust, ascentOverride, descentOverride, lineGapOverride } = computeOverrides(
-      inter,
+      INTER,
       arial,
     )
     for (const v of [sizeAdjust, ascentOverride, descentOverride, lineGapOverride]) {

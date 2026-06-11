@@ -2,7 +2,20 @@ import { describe, expect, it } from 'vitest'
 
 import { normalize } from '@/config/normalize'
 import { generateCss } from '@/css/generate'
+import type { FontMetrics } from '@/metrics/lookup'
 import type { FontFile } from '@/sources/google'
+
+const INTER_METRICS: FontMetrics = {
+  capHeight: 768,
+  ascent: 1984,
+  descent: -494,
+  lineGap: 0,
+  unitsPerEm: 2048,
+  xWidthAvg: 961,
+  category: 'sans-serif',
+}
+
+const METRICS_MAP = { Inter: INTER_METRICS }
 
 const INTER_FILES: FontFile[] = [
   {
@@ -57,7 +70,7 @@ describe('generateCss', () => {
   it('includes sidecar @font-face when adjustFontFallback: true', () => {
     const { families } = normalize('Inter')
     const adjusted = families.map((f) => ({ ...f, adjustFontFallback: true }))
-    const css = generateCss(adjusted, { inter: INTER_FILES }, ASSET_MAP)
+    const css = generateCss(adjusted, { inter: INTER_FILES }, ASSET_MAP, METRICS_MAP)
     expect(css).toContain("font-family: 'Inter Fallback'")
     expect(css).toContain("src: local('Arial')")
     expect(css).toContain('size-adjust:')
@@ -66,14 +79,14 @@ describe('generateCss', () => {
   it('includes sidecar @font-face when adjustFontFallback is string', () => {
     const { families } = normalize('Inter')
     const adjusted = families.map((f) => ({ ...f, adjustFontFallback: 'Arial' }))
-    const css = generateCss(adjusted, { inter: INTER_FILES }, ASSET_MAP)
+    const css = generateCss(adjusted, { inter: INTER_FILES }, ASSET_MAP, METRICS_MAP)
     expect(css).toContain("font-family: 'Inter Fallback'")
   })
 
   it(':root var includes fallback family when adjustFontFallback set', () => {
     const { families } = normalize('Inter')
     const adjusted = families.map((f) => ({ ...f, adjustFontFallback: true }))
-    const css = generateCss(adjusted, { inter: INTER_FILES }, ASSET_MAP)
+    const css = generateCss(adjusted, { inter: INTER_FILES }, ASSET_MAP, METRICS_MAP)
     expect(css).toContain("'Inter Fallback'")
     expect(css).toContain(':root')
   })

@@ -1,10 +1,21 @@
 import { describe, expect, it } from 'vitest'
 
 import { buildFallbackFontFace } from '@/css/fallback'
-import { computeOverrides, getFallbackMetrics, lookupMetrics } from '@/metrics/lookup'
+import { computeOverrides, getFallbackMetrics } from '@/metrics/lookup'
+import type { FontMetrics } from '@/metrics/lookup'
+
+const INTER: FontMetrics = {
+  capHeight: 768,
+  ascent: 1984,
+  descent: -494,
+  lineGap: 0,
+  unitsPerEm: 2048,
+  xWidthAvg: 961,
+  category: 'sans-serif',
+}
 
 function interArialOverrides() {
-  return computeOverrides(lookupMetrics('Inter')!, getFallbackMetrics('Arial')!)
+  return computeOverrides(INTER, getFallbackMetrics('Arial')!)
 }
 
 describe('buildFallbackFontFace', () => {

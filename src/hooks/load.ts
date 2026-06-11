@@ -41,7 +41,7 @@ export async function handleLoad(
     }
   }
 
-  return generateCss(state.config.families, state.filesMap, assetMap)
+  return generateCss(state.config.families, state.filesMap, assetMap, state.metricsMap)
 }
 
 export function handleLoadMeta(id: string, state: PluginState): string | null {
