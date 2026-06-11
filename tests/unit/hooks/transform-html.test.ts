@@ -34,6 +34,8 @@ function makeState(overrides: Partial<PluginState> = {}): PluginState {
     filesMap: { inter: INTER_FILES },
     metricsMap: {},
     assetRefIds: {},
+    outDir: null,
+    htmlInject: null,
     ...overrides,
   }
 }

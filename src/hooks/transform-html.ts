@@ -16,6 +16,7 @@ function preloadFiles(family: NormalizedFamily, files: FontFile[]): FontFile[] {
 
 export function handleTransformIndexHtml(state: PluginState): HtmlTagDescriptor[] {
   if (state.config?.inject !== 'auto') return []
+  if (state.command === 'build') return []
 
   const tags: HtmlTagDescriptor[] = []
 

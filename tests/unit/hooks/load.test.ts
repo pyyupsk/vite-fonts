@@ -29,6 +29,8 @@ function makeState(command: 'serve' | 'build' = 'serve'): PluginState {
     filesMap: { inter: INTER_FILES },
     metricsMap: {},
     assetRefIds: {},
+    outDir: null,
+    htmlInject: null,
   }
 }
 

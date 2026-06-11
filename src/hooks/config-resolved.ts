@@ -18,4 +18,7 @@ export function handleConfigResolved(
   state.cacheDir = join(viteConfig.cacheDir, 'fonts')
   state.root = viteConfig.root
   state.command = viteConfig.command
+  state.outDir = viteConfig.build.outDir
+    ? join(viteConfig.root, viteConfig.build.outDir)
+    : join(viteConfig.root, 'dist')
 }

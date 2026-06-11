@@ -50,6 +50,8 @@ describe('handleBuildStart', () => {
       filesMap: {},
       metricsMap: {},
       assetRefIds: {},
+      outDir: null,
+      htmlInject: null,
     }
 
     const err = await handleBuildStart(state)
@@ -68,6 +70,8 @@ describe('handleBuildStart', () => {
       filesMap: {},
       metricsMap: {},
       assetRefIds: {},
+      outDir: null,
+      htmlInject: null,
     }
 
     const err = await handleBuildStart(state)

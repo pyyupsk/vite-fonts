@@ -6,10 +6,12 @@ export interface PluginState {
   config: FontsConfig | null
   cacheDir: string | null
   root: string | null
+  outDir: string | null
   command: 'serve' | 'build'
   filesMap: Record<string, FontFile[]>
   metricsMap: Record<string, FontMetrics>
   assetRefIds: Record<string, string>
+  htmlInject: string | null
 }
 
 export function createPluginState(): PluginState {
@@ -17,9 +19,11 @@ export function createPluginState(): PluginState {
     config: null,
     cacheDir: null,
     root: null,
+    outDir: null,
     command: 'serve',
     filesMap: {},
     metricsMap: {},
     assetRefIds: {},
+    htmlInject: null,
   }
 }

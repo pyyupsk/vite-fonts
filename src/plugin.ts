@@ -1,4 +1,4 @@
-import { createReadStream } from 'node:fs'
+import { createReadStream, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import type { Plugin } from 'vite'
@@ -50,6 +50,22 @@ export function fonts(input: FontsInput): Plugin {
 
     generateBundle(options, bundle) {
       handleGenerateBundle.call(this, options, bundle, state)
+    },
+
+    closeBundle() {
+      if (state.command !== 'build' || !state.htmlInject || !state.outDir) return
+      const inject = state.htmlInject
+      let htmlFiles: string[]
+      try {
+        htmlFiles = readdirSync(state.outDir).filter((f) => f.endsWith('.html'))
+      } catch {
+        return
+      }
+      for (const file of htmlFiles) {
+        const path = join(state.outDir, file)
+        const html = readFileSync(path, 'utf8').replace('</head>', `${inject}\n  </head>`)
+        writeFileSync(path, html)
+      }
     },
 
     transformIndexHtml() {
