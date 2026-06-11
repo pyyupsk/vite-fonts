@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { downloadFont } from '@/cache/download'
 
@@ -13,6 +13,8 @@ function mockFetch(status: number, body: Uint8Array, contentType = 'font/woff2')
     }),
   )
 }
+
+afterEach(() => vi.unstubAllGlobals())
 
 describe('downloadFont', () => {
   it('returns bytes on success', async () => {

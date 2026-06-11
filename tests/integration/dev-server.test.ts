@@ -1,8 +1,9 @@
+import { strict as assert } from 'node:assert'
 import { resolve } from 'node:path'
 
 import type { ViteDevServer } from 'vite'
 import { createServer } from 'vite'
-import { afterAll, assert, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/cache/manager', () => ({
   ensureFonts: vi.fn().mockResolvedValue([
@@ -20,6 +21,7 @@ vi.mock('@/cache/manager', () => ({
               family: 'Inter',
               weight: 400,
               style: 'normal',
+              subset: 'latin',
             },
           ],
         },

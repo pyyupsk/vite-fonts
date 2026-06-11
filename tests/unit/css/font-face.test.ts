@@ -9,6 +9,7 @@ const FILE: FontFile = {
   family: 'Inter',
   weight: 400,
   style: 'normal',
+  subset: 'latin',
 }
 
 describe('buildFontFace', () => {

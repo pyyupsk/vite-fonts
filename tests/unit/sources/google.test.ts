@@ -47,8 +47,21 @@ describe('buildGoogleFontsUrl', () => {
 })
 
 describe('parseGoogleFontsCss', () => {
-  it('parses all 14 font-face blocks from real Inter CSS', () => {
+  it('filters to latin subset by default (2 blocks from 14)', () => {
     const files = parseGoogleFontsCss(FIXTURE_CSS)
+    expect(files).toHaveLength(2)
+  })
+
+  it('returns all 14 blocks when all subsets requested', () => {
+    const files = parseGoogleFontsCss(FIXTURE_CSS, [
+      'cyrillic-ext',
+      'cyrillic',
+      'greek-ext',
+      'greek',
+      'vietnamese',
+      'latin-ext',
+      'latin',
+    ])
     expect(files).toHaveLength(14)
   })
 
@@ -61,15 +74,15 @@ describe('parseGoogleFontsCss', () => {
   })
 
   it('extracts correct family, weight, style for first block', () => {
-    const file = parseGoogleFontsCss(FIXTURE_CSS)[0]! // nosonar - noUncheckedIndexedAccess makes [0] T|undefined; ! is correct
+    const file = parseGoogleFontsCss(FIXTURE_CSS)[0]!
     expect(file.family).toBe('Inter')
     expect(file.weight).toBe(400)
     expect(file.style).toBe('normal')
   })
 
-  it('generates stable filename', () => {
-    const file = parseGoogleFontsCss(FIXTURE_CSS)[0]! // nosonar - noUncheckedIndexedAccess makes [0] T|undefined; ! is correct
-    expect(file.filename).toBe('inter-400-normal.woff2')
+  it('generates stable filename with subset', () => {
+    const file = parseGoogleFontsCss(FIXTURE_CSS)[0]!
+    expect(file.filename).toBe('inter-400-normal-latin.woff2')
   })
 
   it('parses both weight 400 and 700 blocks', () => {

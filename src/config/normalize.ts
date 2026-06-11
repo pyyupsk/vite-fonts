@@ -71,7 +71,7 @@ function normalizeOptions(opts: FontsOptions): FontsConfig {
         subsets: cfg.subsets ?? opts.subsets ?? DEFAULTS.subsets,
         display: cfg.display ?? opts.display ?? DEFAULTS.display,
         axes: cfg.axes ?? DEFAULTS.axes,
-        variable: cfg.variable ?? toVariable(cfg.family),
+        variable: cfg.variable ?? `--font-${toKey(key)}`,
         fallback: cfg.fallback ?? DEFAULTS.fallback,
         adjustFontFallback: cfg.adjustFontFallback ?? DEFAULTS.adjustFontFallback,
         local: cfg.local ?? DEFAULTS.local,

@@ -6,16 +6,19 @@ export interface FontFile {
   family: string
   weight: number | string
   style: 'normal' | 'italic'
+  subset: string
+  unicodeRange?: string
 }
 
 const VARIABLE_RANGE = '100..900'
 const BASE_URL = 'https://fonts.googleapis.com/css2'
 
-const RE_FONT_FACE = /@font-face\s*\{[^}]+\}/g
+const RE_BLOCK = /\/\*\s*([^*]+?)\s*\*\/\s*(@font-face\s*\{[^}]+\})/g
 const RE_URL = /url\(([^)]+)\)/
 const RE_FAMILY = /font-family:\s*['"]?([^'";]+)['"]?/
 const RE_WEIGHT = /font-weight:\s*([^\s;]+)/
 const RE_STYLE = /font-style:\s*([^\s;]+)/
+const RE_UNICODE_RANGE = /unicode-range:\s*([^;]+)/
 
 export function buildGoogleFontsUrl(family: NormalizedFamily): string {
   const isVariable = family.weights.includes('variable')
@@ -46,20 +49,31 @@ export function buildGoogleFontsUrl(family: NormalizedFamily): string {
   return `${BASE_URL}?family=${encodeURIComponent(familyParam)}&display=${family.display}`
 }
 
-export function parseGoogleFontsCss(css: string): FontFile[] {
-  const blocks = css.match(RE_FONT_FACE) ?? []
+export function parseGoogleFontsCss(css: string, subsets = ['latin']): FontFile[] {
+  const results: FontFile[] = []
+  let match: RegExpExecArray | null
 
-  return blocks.map((block) => {
+  RE_BLOCK.lastIndex = 0
+  while ((match = RE_BLOCK.exec(css)) !== null) {
+    const subset = match[1]?.trim() ?? 'latin'
+    const block = match[2] ?? ''
+
+    if (!subsets.includes(subset)) continue
+
     const url = (RE_URL.exec(block) ?? [])[1] ?? ''
     const family = ((RE_FAMILY.exec(block) ?? [])[1] ?? '').trim()
     const weightRaw = ((RE_WEIGHT.exec(block) ?? [])[1] ?? '400').trim()
     const style = ((RE_STYLE.exec(block) ?? [])[1] ?? 'normal').trim() as 'normal' | 'italic'
+    const unicodeRange = ((RE_UNICODE_RANGE.exec(block) ?? [])[1] ?? '').trim() || undefined
 
     const weight = /^\d+$/.test(weightRaw) ? Number(weightRaw) : weightRaw
 
     const familySlug = family.toLowerCase().replace(/\s+/g, '-')
-    const filename = `${familySlug}-${weight}-${style}.woff2`
+    const subsetSlug = subset.replace(/[^a-z0-9]/g, '-')
+    const filename = `${familySlug}-${weight}-${style}-${subsetSlug}.woff2`
 
-    return { url, filename, family, weight, style }
-  })
+    results.push({ url, filename, family, weight, style, subset, unicodeRange })
+  }
+
+  return results
 }

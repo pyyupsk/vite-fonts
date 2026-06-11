@@ -3,6 +3,7 @@ import { join } from 'node:path'
 
 import type { Plugin } from 'vite'
 
+import { generateCss } from '@/css/generate'
 import type { FontsInput } from '@/types'
 
 import { handleBuildStart } from './hooks/build-start'
@@ -58,6 +59,20 @@ export function fonts(input: FontsInput): Plugin {
     configureServer(server) {
       if (!state.cacheDir) return
       const fontsDir = state.cacheDir
+
+      server.middlewares.use('/@pyyupsk/fonts', (_req, res, next) => {
+        if (!state.config) return next()
+        const assetMap: Record<string, string> = {}
+        for (const files of Object.values(state.filesMap)) {
+          for (const file of files) {
+            assetMap[file.filename] = `/__fonts/${file.filename}`
+          }
+        }
+        const css = generateCss(state.config.families, state.filesMap, assetMap, state.metricsMap)
+        res.setHeader('Content-Type', 'text/css')
+        res.end(css)
+      })
+
       server.middlewares.use('/__fonts', (req, res, next) => {
         const filename = req.url?.slice(1)
         if (!filename) return next()

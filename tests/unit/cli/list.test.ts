@@ -19,6 +19,7 @@ const MANIFEST: CacheManifest = {
           family: 'Inter',
           weight: 400,
           style: 'normal',
+          subset: 'latin',
         },
         {
           url: '',
@@ -26,6 +27,7 @@ const MANIFEST: CacheManifest = {
           family: 'Inter',
           weight: 700,
           style: 'normal',
+          subset: 'latin',
         },
       ],
     },

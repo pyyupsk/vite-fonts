@@ -64,7 +64,7 @@ describe('normalize', () => {
 
     const mono = config.families.find((f) => f.key === 'mono')
     expect(mono?.weights).toEqual(['variable'])
-    expect(mono?.variable).toBe('--font-jetbrains-mono')
+    expect(mono?.variable).toBe('--font-mono')
   })
 
   it('source and inject forwarded from options', () => {

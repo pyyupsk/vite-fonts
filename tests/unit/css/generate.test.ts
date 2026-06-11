@@ -24,6 +24,7 @@ const INTER_FILES: FontFile[] = [
     family: 'Inter',
     weight: 400,
     style: 'normal',
+    subset: 'latin',
   },
   {
     url: 'https://fonts.gstatic.com/inter-700.woff2',
@@ -31,6 +32,7 @@ const INTER_FILES: FontFile[] = [
     family: 'Inter',
     weight: 700,
     style: 'normal',
+    subset: 'latin',
   },
 ]
 

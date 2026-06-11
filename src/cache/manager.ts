@@ -55,7 +55,10 @@ async function downloadFamily(
   let css: string
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; vite-fonts/0.1)' },
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
     })
     if (!res.ok) return [fontNotFoundError(family.family, res.status), null]
     css = await res.text()
@@ -63,7 +66,7 @@ async function downloadFamily(
     return [networkError(family.family, e), null]
   }
 
-  const fontFiles = parseGoogleFontsCss(css)
+  const fontFiles = parseGoogleFontsCss(css, family.subsets)
   const written: string[] = []
 
   for (const file of fontFiles) {

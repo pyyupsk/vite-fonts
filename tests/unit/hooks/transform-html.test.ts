@@ -6,8 +6,22 @@ import { handleTransformIndexHtml } from '@/hooks/transform-html'
 import type { FontFile } from '@/sources/google'
 
 const INTER_FILES: FontFile[] = [
-  { url: '', filename: 'inter-400-normal.woff2', family: 'Inter', weight: 400, style: 'normal' },
-  { url: '', filename: 'inter-700-normal.woff2', family: 'Inter', weight: 700, style: 'normal' },
+  {
+    url: '',
+    filename: 'inter-400-normal.woff2',
+    family: 'Inter',
+    weight: 400,
+    style: 'normal',
+    subset: 'latin',
+  },
+  {
+    url: '',
+    filename: 'inter-700-normal.woff2',
+    family: 'Inter',
+    weight: 700,
+    style: 'normal',
+    subset: 'latin',
+  },
 ]
 
 function makeState(overrides: Partial<PluginState> = {}): PluginState {
