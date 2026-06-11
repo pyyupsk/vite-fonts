@@ -1,9 +1,13 @@
-import type { NormalizedOutputOptions, OutputBundle, PluginContext } from 'rolldown'
-
 import type { PluginState } from './state'
 
+interface BundleContext {
+  getFileName(referenceId: string): string
+}
+
+type OutputBundle = Record<string, { type: string; source?: string | Uint8Array }>
+
 function rewritePlaceholders(
-  context: PluginContext,
+  context: BundleContext,
   source: string,
   assetRefIds: PluginState['assetRefIds'],
 ): string {
@@ -21,8 +25,8 @@ function rewritePlaceholders(
 }
 
 export function handleGenerateBundle(
-  this: PluginContext,
-  _options: NormalizedOutputOptions,
+  this: BundleContext,
+  _options: unknown,
   bundle: OutputBundle,
   state: PluginState,
 ): void {

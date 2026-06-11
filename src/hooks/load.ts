@@ -1,7 +1,9 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import type { PluginContext } from 'rolldown'
+interface EmitContext {
+  emitFile(emittedFile: { type: 'asset'; name: string; source: Uint8Array }): string
+}
 
 import { generateCss } from '@/css/generate'
 
@@ -11,7 +13,7 @@ import type { PluginState } from './state'
 export async function handleLoad(
   id: string,
   state: PluginState,
-  context: PluginContext,
+  context: EmitContext,
 ): Promise<string | null> {
   if (id !== RESOLVED_ID) return null
   if (!state.config || !state.cacheDir) return null

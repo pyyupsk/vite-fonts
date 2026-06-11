@@ -14,5 +14,13 @@
       }
     ]
   },
-  "ignorePatterns": ["dist", "node_modules"]
+  "ignorePatterns": ["dist", "node_modules"],
+  "overrides": [
+    {
+      "files": ["src/cli/**"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
 }
