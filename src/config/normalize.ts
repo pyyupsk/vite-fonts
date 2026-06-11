@@ -1,3 +1,5 @@
+import { variableCollisionError } from '@/errors/messages'
+
 import type {
   FontDisplay,
   FontInject,
@@ -83,22 +85,34 @@ function normalizeOptions(opts: FontsOptions): FontsConfig {
   }
 }
 
+function validateVariables(families: NormalizedFamily[]): void {
+  const seen = new Map<string, string>()
+  for (const f of families) {
+    const prev = seen.get(f.variable)
+    if (prev !== undefined) throw variableCollisionError(f.variable, [prev, f.key])
+    seen.set(f.variable, f.key)
+  }
+}
+
 export function normalize(input: FontsInput): FontsConfig {
+  let config: FontsConfig
+
   if (typeof input === 'string') {
-    return {
+    config = {
       source: DEFAULTS.source,
       inject: DEFAULTS.inject,
       families: [normalizeFamily(input)],
     }
-  }
-
-  if (Array.isArray(input)) {
-    return {
+  } else if (Array.isArray(input)) {
+    config = {
       source: DEFAULTS.source,
       inject: DEFAULTS.inject,
       families: normalizeFamiliesArray(input),
     }
+  } else {
+    config = normalizeOptions(input)
   }
 
-  return normalizeOptions(input)
+  validateVariables(config.families)
+  return config
 }

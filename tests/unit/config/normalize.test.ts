@@ -72,4 +72,26 @@ describe('normalize', () => {
     expect(config.source).toBe('bunny')
     expect(config.inject).toBe(false)
   })
+
+  it('throws on duplicate CSS variable across families', () => {
+    expect(() =>
+      normalize({
+        families: {
+          sans: { family: 'Inter', variable: '--font-clash' },
+          brand: { family: 'Lato', variable: '--font-clash' },
+        },
+      }),
+    ).toThrow('--font-clash')
+  })
+
+  it('throws with both family keys in collision error', () => {
+    expect(() =>
+      normalize({
+        families: {
+          sans: { family: 'Inter', variable: '--font-clash' },
+          brand: { family: 'Lato', variable: '--font-clash' },
+        },
+      }),
+    ).toThrow('families.sans')
+  })
 })

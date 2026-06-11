@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { hashConfig } from '@/config/hash'
+import { fontNotFoundError, networkError } from '@/errors/messages'
 import { getLogger } from '@/logger'
 import { buildGoogleFontsUrl, parseGoogleFontsCss } from '@/sources/google'
 import type { FontFile } from '@/sources/google'
@@ -56,14 +57,10 @@ async function downloadFamily(
     const res = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; vite-fonts/0.1)' },
     })
-    if (!res.ok)
-      return [
-        new Error(`[vite-fonts] Failed to fetch CSS for "${family.family}": HTTP ${res.status}`),
-        null,
-      ]
+    if (!res.ok) return [fontNotFoundError(family.family, res.status), null]
     css = await res.text()
   } catch (e) {
-    return [e instanceof Error ? e : new Error(String(e)), null]
+    return [networkError(family.family, e), null]
   }
 
   const fontFiles = parseGoogleFontsCss(css)

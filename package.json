@@ -24,6 +24,8 @@
     "check": "bun run lint && bun run format:check",
     "format": "oxfmt .",
     "format:check": "oxfmt . --check",
+    "generate:fonts": "bun scripts/generate-fonts.ts",
+    "generate:metrics": "bun scripts/generate-metrics.ts",
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
     "prepare": "nit install",
@@ -36,6 +38,7 @@
     "consola": "^3.4.2"
   },
   "devDependencies": {
+    "@capsizecss/metrics": "^4.0.0",
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
     "@pyyupsk/nit": "^0.3.0",
