@@ -1,1 +1,19 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-bg-base: #0d0d12;
+  --color-surface-1: #13131a;
+  --color-text-strong: #f4f4f8;
+  --color-text-muted: #7a7a9a;
+  --color-accent: #8b5cf6;
+  --color-accent-soft: rgba(139, 92, 246, 0.12);
+  --color-accent-text: #c4b5fd;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--color-bg-base);
+  color: var(--color-text-strong);
+  font-family: var(--font-sans);
+  -moz-osx-font-smoothing: grayscale;
+}
