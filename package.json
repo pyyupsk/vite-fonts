@@ -1,6 +1,21 @@
 {
   "name": "@pyyupsk/vite-fonts",
   "version": "0.1.0",
+  "description": "Vite plugin that downloads and self-hosts web fonts at build time",
+  "keywords": [
+    "astro",
+    "fonts",
+    "google-fonts",
+    "self-host",
+    "vite",
+    "vite-plugin",
+    "web-fonts"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pyyupsk/vite-fonts.git"
+  },
   "bin": {
     "vite-fonts": "./dist/cli/index.js"
   },
@@ -36,7 +51,6 @@
     "generate:metrics": "bun scripts/generate-metrics.ts",
     "lint": "oxlint . --config .configs/oxlintrc.json",
     "lint:fix": "oxlint . --config .configs/oxlintrc.json --fix",
-    "prepare": "nit install",
     "test": "vitest run --config .configs/vitest.config.ts",
     "test:watch": "vitest --config .configs/vitest.config.ts",
     "typecheck": "tsc --noEmit"
