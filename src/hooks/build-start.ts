@@ -1,12 +1,13 @@
 import { ensureFonts } from '@/cache/manager'
 import { generateDts } from '@/dts/generate'
+import { stateNotInitializedError } from '@/errors/messages'
 import { extractMetrics } from '@/metrics/extract'
 
 import type { PluginState } from './state'
 
 export async function handleBuildStart(state: PluginState): Promise<Error | null> {
   if (!state.config || !state.cacheDir || !state.root) {
-    return new Error('[vite-fonts] Plugin state not initialized — configResolved must run first')
+    return stateNotInitializedError()
   }
 
   let result: Awaited<ReturnType<typeof ensureFonts>>

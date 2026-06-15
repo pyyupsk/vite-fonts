@@ -49,3 +49,10 @@ export function localFileMissingError(path: string, familyKey: string): Error {
       `  Resolved from: vite.config.ts (families.${familyKey}.local)`,
   )
 }
+
+export function stateNotInitializedError(): Error {
+  return new Error(
+    `[vite-fonts] Plugin state not initialized.\n\n` +
+      `  configResolved must run before buildStart.`,
+  )
+}
