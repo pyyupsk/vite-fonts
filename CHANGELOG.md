@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.1.0...vite-fonts-v0.1.1) (2026-06-15)
+
+
+### 🐛 Bug Fixes
+
+* add setup-node to resolve npm auth in publish job ([#2](https://github.com/pyyupsk/vite-fonts/issues/2)) ([f6f6781](https://github.com/pyyupsk/vite-fonts/commit/f6f67816ae9a1fcb2a36a0a9e24e4ce87d43548e))
+* resolve variable fonts with non-standard wght axis minimum ([#5](https://github.com/pyyupsk/vite-fonts/issues/5)) ([6b06281](https://github.com/pyyupsk/vite-fonts/commit/6b0628152c1541b168bb861bd87c5466dd938055))
+
 ## 0.1.0 (2026-06-15)
 
 ### ✨ Features
