@@ -2,6 +2,7 @@ import type { FontMetrics } from '@/metrics/lookup'
 import type { FontFile } from '@/sources/google'
 import type { FontsConfig } from '@/types'
 
+/** Mutable state shared across all Vite plugin hooks within a single build. */
 export interface PluginState {
   config: FontsConfig | null
   cacheDir: string | null

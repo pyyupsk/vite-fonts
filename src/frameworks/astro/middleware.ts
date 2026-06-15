@@ -1,3 +1,11 @@
+/**
+ * Astro middleware that injects the fonts stylesheet link into HTML responses.
+ * Registered automatically by the Astro integration — do not call directly.
+ *
+ * @param _context - Astro request context (unused).
+ * @param next - Next middleware handler.
+ * @returns Modified response with stylesheet injected, or original response unchanged.
+ */
 export async function onRequest(
   _context: unknown,
   next: () => Promise<Response>,

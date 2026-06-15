@@ -1,12 +1,19 @@
 {
   "$schema": "../node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn"],
+  "plugins": ["typescript", "unicorn", "jsdoc"],
   "categories": {
     "correctness": "error",
     "suspicious": "warn"
   },
   "rules": {
     "no-console": "warn",
+    "jsdoc/check-tag-names": "error",
+    "jsdoc/implements-on-classes": "error",
+    "jsdoc/require-param": "warn",
+    "jsdoc/require-param-description": "warn",
+    "jsdoc/require-param-name": "error",
+    "jsdoc/require-returns": "warn",
+    "jsdoc/require-returns-description": "warn",
     "unicorn/filename-case": [
       "error",
       {
