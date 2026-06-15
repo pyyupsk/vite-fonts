@@ -1,7 +1,7 @@
 import { createReadStream, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import type { Plugin } from 'vite'
+import type { PluginOption } from 'vite'
 
 import { generateCss } from '@/css/generate'
 import type { FontsInput } from '@/types'
@@ -16,7 +16,7 @@ import { handleTransformIndexHtml } from './hooks/transform-html'
 
 export type { PluginState } from './hooks/state'
 
-export function fonts(input: FontsInput): Plugin {
+export function fonts(input: FontsInput): PluginOption {
   const state = createPluginState()
 
   return {

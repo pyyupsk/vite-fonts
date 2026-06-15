@@ -8,7 +8,7 @@ export function fonts(input: FontsInput): AstroIntegration {
     name: 'vite-fonts-astro',
     hooks: {
       'astro:config:setup': ({ updateConfig, addMiddleware }) => {
-        updateConfig({ vite: { plugins: [fontsPlugin(input)] } })
+        updateConfig({ vite: { plugins: [fontsPlugin(input) as any] } })
         addMiddleware({
           entrypoint: '@pyyupsk/vite-fonts/middleware',
           order: 'pre',
