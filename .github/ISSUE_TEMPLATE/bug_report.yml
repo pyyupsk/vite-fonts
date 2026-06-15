@@ -1,0 +1,58 @@
+name: Bug Report
+description: Report a bug in @pyyupsk/vite-fonts
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing, please search existing issues.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Minimal config or repo to reproduce.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: '0.1.0'
+    validations:
+      required: true
+
+  - type: input
+    id: vite-version
+    attributes:
+      label: Vite version
+      placeholder: '6.0.0'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: framework
+    attributes:
+      label: Framework
+      options:
+        - Vite (vanilla)
+        - Astro
+        - Other
+    validations:
+      required: true
