@@ -3,7 +3,7 @@ import { basename, join } from 'node:path'
 
 import { hashConfig } from '@/config/hash'
 import { fontNotFoundError, networkError } from '@/errors/messages'
-import { getLogger } from '@/logger'
+import { clr, getLogger } from '@/logger'
 import { buildBunnyFontsUrl, parseBunnyFontsCss } from '@/sources/bunny'
 import { buildGoogleFontsUrl, parseGoogleFontsCss } from '@/sources/google'
 import type { FontFile } from '@/sources/google'
@@ -48,7 +48,6 @@ function handleLocalFamily(
   family: NormalizedFamily,
   cacheDir: string,
 ): [null, { files: string[]; fontFiles: FontFile[] }] {
-  const logger = getLogger()
   const files: string[] = []
   const fontFiles: FontFile[] = []
 
@@ -67,7 +66,6 @@ function handleLocalFamily(
     })
   }
 
-  logger.info(`"${family.family}" loaded from local files (${files.length} files)`)
   return [null, { files, fontFiles }]
 }
 
@@ -76,12 +74,8 @@ async function downloadFamily(
   cacheDir: string,
   source: FontSource,
 ): Promise<[Error, null] | [null, { files: string[]; fontFiles: FontFile[] }]> {
-  const logger = getLogger()
   const isBunny = source === 'bunny'
   const url = isBunny ? buildBunnyFontsUrl(family) : buildGoogleFontsUrl(family)
-  const sourceName = isBunny ? 'Bunny Fonts' : 'Google Fonts'
-
-  logger.info(`Downloading "${family.family}" from ${sourceName}...`)
 
   let css: string
   try {
@@ -110,7 +104,6 @@ async function downloadFamily(
     if (!written.includes(file.filename)) written.push(file.filename)
   }
 
-  logger.info(`"${family.family}" cached (${written.length} files)`)
   return [null, { files: written, fontFiles }]
 }
 
@@ -123,14 +116,19 @@ export async function ensureFonts(
 
   const manifest: CacheManifest = readManifest(cacheDir) ?? { version: 1, families: {} }
   const logger = getLogger()
+  const sourceName = source === 'bunny' ? 'Bunny Fonts' : 'Google Fonts'
+
+  const cached: string[] = []
+  const downloaded: string[] = []
+  const local: string[] = []
 
   for (const family of families) {
     const hash = familyHash(family, source)
-    const cached = manifest.families[family.key]
+    const entry = manifest.families[family.key]
 
-    if (cached?.hash === hash) {
-      logger.info(`"${family.family}" loaded from cache`)
-      if (!cached.fontFiles) cached.fontFiles = []
+    if (entry?.hash === hash) {
+      cached.push(family.family)
+      if (!entry.fontFiles) entry.fontFiles = []
       continue
     }
 
@@ -141,7 +139,21 @@ export async function ensureFonts(
     if (err) return [err, null]
 
     manifest.families[family.key] = { hash, files: result.files, fontFiles: result.fontFiles }
+    if (isLocalOnly) local.push(family.family)
+    else downloaded.push(family.family)
   }
+
+  const fmt = (names: string[]) =>
+    names.map((n) => `${clr.bold}${n}${clr.reset}`).join(`${clr.dim}, ${clr.reset}`)
+
+  if (downloaded.length)
+    logger.info(
+      `${clr.green}✓${clr.reset} ${fmt(downloaded)} ${clr.dim}via ${sourceName}${clr.reset}`,
+    )
+  if (local.length)
+    logger.info(`${clr.green}✓${clr.reset} ${fmt(local)} ${clr.dim}from local${clr.reset}`)
+  if (cached.length)
+    logger.info(`${clr.green}✓${clr.reset} ${fmt(cached)} ${clr.dim}from cache${clr.reset}`)
 
   writeManifest(cacheDir, manifest)
   return [null, manifest]
