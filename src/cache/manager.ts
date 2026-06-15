@@ -5,7 +5,12 @@ import { hashConfig } from '@/config/hash'
 import { fontNotFoundError, networkError } from '@/errors/messages'
 import { clr, getLogger } from '@/logger'
 import { buildBunnyFontsUrl, parseBunnyFontsCss } from '@/sources/bunny'
-import { buildGoogleFontsUrl, parseGoogleFontsCss } from '@/sources/google'
+import {
+  buildGoogleFontsUrl,
+  fetchGoogleFontMetadata,
+  parseGoogleFontsCss,
+  variableRangeFromMetadata,
+} from '@/sources/google'
 import type { FontFile } from '@/sources/google'
 import type { FontsConfig, FontSource, NormalizedFamily } from '@/types'
 
@@ -72,22 +77,35 @@ function handleLocalFamily(
   return [null, { files, fontFiles }]
 }
 
+// fallow-ignore-next-line complexity
 async function downloadFamily(
   family: NormalizedFamily,
   cacheDir: string,
   source: FontSource,
 ): Promise<[Error, null] | [null, { files: string[]; fontFiles: FontFile[] }]> {
   const isBunny = source === 'bunny'
-  const url = isBunny ? buildBunnyFontsUrl(family) : buildGoogleFontsUrl(family)
+  const isVariable = family.weights.includes('variable')
+
+  const buildUrl = (variableRange?: string) =>
+    isBunny ? buildBunnyFontsUrl(family) : buildGoogleFontsUrl(family, variableRange)
+
+  const headers = {
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  }
 
   let css: string
   try {
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      },
-    })
+    let res = await fetch(buildUrl(), { headers })
+
+    if (!res.ok && res.status === 400 && isVariable) {
+      const metadata = await fetchGoogleFontMetadata(family.family)
+      if (metadata) {
+        const range = variableRangeFromMetadata(metadata)
+        res = await fetch(buildUrl(range), { headers })
+      }
+    }
+
     if (!res.ok) return [fontNotFoundError(family.family, res.status), null]
     css = await res.text()
   } catch (e) {
