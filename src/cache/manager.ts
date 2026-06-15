@@ -4,6 +4,7 @@ import { basename, join } from 'node:path'
 import { hashConfig } from '@/config/hash'
 import { fontNotFoundError, networkError } from '@/errors/messages'
 import { getLogger } from '@/logger'
+import { buildBunnyFontsUrl, parseBunnyFontsCss } from '@/sources/bunny'
 import { buildGoogleFontsUrl, parseGoogleFontsCss } from '@/sources/google'
 import type { FontFile } from '@/sources/google'
 import type { FontsConfig, FontSource, NormalizedFamily } from '@/types'
@@ -73,11 +74,14 @@ function handleLocalFamily(
 async function downloadFamily(
   family: NormalizedFamily,
   cacheDir: string,
+  source: FontSource,
 ): Promise<[Error, null] | [null, { files: string[]; fontFiles: FontFile[] }]> {
   const logger = getLogger()
-  const url = buildGoogleFontsUrl(family)
+  const isBunny = source === 'bunny'
+  const url = isBunny ? buildBunnyFontsUrl(family) : buildGoogleFontsUrl(family)
+  const sourceName = isBunny ? 'Bunny Fonts' : 'Google Fonts'
 
-  logger.info(`Downloading "${family.family}" from Google Fonts...`)
+  logger.info(`Downloading "${family.family}" from ${sourceName}...`)
 
   let css: string
   try {
@@ -93,7 +97,8 @@ async function downloadFamily(
     return [networkError(family.family, e), null]
   }
 
-  const fontFiles = parseGoogleFontsCss(css, family.subsets)
+  const parseCss = isBunny ? parseBunnyFontsCss : parseGoogleFontsCss
+  const fontFiles = parseCss(css, family.subsets)
   const written: string[] = []
 
   for (const file of fontFiles) {
@@ -132,7 +137,7 @@ export async function ensureFonts(
     const isLocalOnly = family.local.length > 0
     const [err, result] = isLocalOnly
       ? handleLocalFamily(family, cacheDir)
-      : await downloadFamily(family, cacheDir)
+      : await downloadFamily(family, cacheDir, source)
     if (err) return [err, null]
 
     manifest.families[family.key] = { hash, files: result.files, fontFiles: result.fontFiles }
