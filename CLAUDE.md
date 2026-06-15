@@ -32,10 +32,11 @@ This is a Vite plugin (`@pyyupsk/vite-fonts`) that downloads and self-hosts web 
 
 **Entry points** (built by tsdown):
 
-- `src/index.ts` — main `fonts()` plugin export
-- `src/frameworks/astro.ts` — Astro integration wrapper
-- `src/middleware.ts` — standalone middleware
+- `src/index.ts` — main `fonts()` plugin export (`"."`)
+- `src/frameworks/astro.ts` — Astro integration wrapper (`"./astro"`)
+- `src/middleware.ts` — standalone middleware (`"./astro/middleware"`)
 - `src/cli/index.ts` — `vite-fonts` CLI (clean/list)
+- `src/client.d.ts` — ambient types for `@pyyupsk/fonts` virtual module (`"./client"`)
 
 **Plugin lifecycle** (`src/hooks/`):
 
