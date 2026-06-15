@@ -11,6 +11,9 @@ import type { FontsConfig, FontSource, NormalizedFamily } from '@/types'
 
 import { downloadFont } from './download'
 
+const fmt = (names: string[]) =>
+  names.map((n) => `${clr.bold}${n}${clr.reset}`).join(`${clr.dim}, ${clr.reset}`)
+
 export interface CacheManifestEntry {
   hash: string
   files: string[]
@@ -142,9 +145,6 @@ export async function ensureFonts(
     if (isLocalOnly) local.push(family.family)
     else downloaded.push(family.family)
   }
-
-  const fmt = (names: string[]) =>
-    names.map((n) => `${clr.bold}${n}${clr.reset}`).join(`${clr.dim}, ${clr.reset}`)
 
   if (downloaded.length)
     logger.info(
