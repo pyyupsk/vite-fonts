@@ -20,16 +20,10 @@ const RE_WEIGHT = /font-weight:\s*([^\s;]+)/
 const RE_STYLE = /font-style:\s*([^\s;]+)/
 const RE_UNICODE_RANGE = /unicode-range:\s*([^;]+)/
 
-// fallow-ignore-next-line code-duplication
-export function buildGoogleFontsUrl(
-  family: NormalizedFamily,
-  variableRange = VARIABLE_RANGE,
-): string {
+export function buildFamilyParam(family: NormalizedFamily, variableRange = VARIABLE_RANGE): string {
   const isVariable = family.weights.includes('variable')
   const hasItalic = family.styles.includes('italic')
   const extraAxes = family.axes.filter((a) => a !== 'wght' && a !== 'ital').toSorted()
-
-  let familyParam: string
 
   if (isVariable) {
     const axisNames = [...(hasItalic ? ['ital'] : []), ...extraAxes, 'wght'].join(',')
@@ -37,27 +31,27 @@ export function buildGoogleFontsUrl(
     if (hasItalic) {
       const prefix = extraAxes.length ? `0,${axisDefaults},` : '0,'
       const prefixI = extraAxes.length ? `1,${axisDefaults},` : '1,'
-      familyParam = `${family.family}:${axisNames}@${prefix}${variableRange};${prefixI}${variableRange}`
-    } else if (extraAxes.length) {
-      familyParam = `${family.family}:${axisNames}@${axisDefaults},${variableRange}`
-    } else {
-      familyParam = `${family.family}:wght@${variableRange}`
+      return `${family.family}:${axisNames}@${prefix}${variableRange};${prefixI}${variableRange}`
     }
-  } else {
-    const numericWeights = family.weights.filter((w): w is number => typeof w === 'number')
-
-    if (hasItalic) {
-      const entries = [
-        ...numericWeights.map((w) => `0,${w}`),
-        ...numericWeights.map((w) => `1,${w}`),
-      ]
-        .toSorted((a, b) => a.localeCompare(b))
-        .join(';')
-      familyParam = `${family.family}:ital,wght@${entries}`
-    } else {
-      familyParam = `${family.family}:wght@${numericWeights.join(';')}`
-    }
+    if (extraAxes.length) return `${family.family}:${axisNames}@${axisDefaults},${variableRange}`
+    return `${family.family}:wght@${variableRange}`
   }
+
+  const numericWeights = family.weights.filter((w): w is number => typeof w === 'number')
+  if (hasItalic) {
+    const entries = [...numericWeights.map((w) => `0,${w}`), ...numericWeights.map((w) => `1,${w}`)]
+      .toSorted((a, b) => a.localeCompare(b))
+      .join(';')
+    return `${family.family}:ital,wght@${entries}`
+  }
+  return `${family.family}:wght@${numericWeights.join(';')}`
+}
+
+export function buildGoogleFontsUrl(
+  family: NormalizedFamily,
+  variableRange = VARIABLE_RANGE,
+): string {
+  const familyParam = buildFamilyParam(family, variableRange)
 
   return `${BASE_URL}?family=${encodeURIComponent(familyParam)}&display=${family.display}`
 }

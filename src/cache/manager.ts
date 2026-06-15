@@ -77,6 +77,7 @@ function handleLocalFamily(
   return [null, { files, fontFiles }]
 }
 
+// fallow-ignore-next-line complexity
 async function downloadFamily(
   family: NormalizedFamily,
   cacheDir: string,
@@ -97,7 +98,7 @@ async function downloadFamily(
   try {
     let res = await fetch(buildUrl(), { headers })
 
-    if (!res.ok && res.status === 400 && isVariable && !isBunny) {
+    if (!res.ok && res.status === 400 && isVariable) {
       const metadata = await fetchGoogleFontMetadata(family.family)
       if (metadata) {
         const range = variableRangeFromMetadata(metadata)
