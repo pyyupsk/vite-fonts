@@ -10,7 +10,7 @@ import { handleBuildStart } from './hooks/build-start'
 import { handleConfigResolved } from './hooks/config-resolved'
 import { handleGenerateBundle } from './hooks/generate-bundle'
 import { handleLoad, handleLoadMeta } from './hooks/load'
-import { handleResolveId } from './hooks/resolve-id'
+import { RESOLVED_ID, handleResolveId } from './hooks/resolve-id'
 import { createPluginState } from './hooks/state'
 import { handleTransformIndexHtml } from './hooks/transform-html'
 
@@ -25,7 +25,7 @@ export function fonts(input: FontsInput): Plugin {
     sharedDuringBuild: true,
 
     applyToEnvironment(env) {
-      return env.name === 'client'
+      return env.name === 'client' || env.name === 'server' || env.name === 'ssr'
     },
 
     configResolved(config) {
@@ -45,14 +45,22 @@ export function fonts(input: FontsInput): Plugin {
     },
 
     async load(id) {
+      if (this.environment?.name !== 'client') {
+        if (id === RESOLVED_ID) return ''
+        return handleLoadMeta(id, state)
+      }
       return (await handleLoad(id, state, this)) ?? handleLoadMeta(id, state)
     },
 
     generateBundle(options, bundle) {
+      const envName = this.environment?.name
+      if (envName && envName !== 'client') return
       handleGenerateBundle.call(this, options, bundle, state)
     },
 
     closeBundle() {
+      const envName = this.environment?.name
+      if (envName && envName !== 'client') return
       if (state.command !== 'build' || !state.htmlInject || !state.outDir) return
       const inject = state.htmlInject
       let htmlFiles: string[]
@@ -76,7 +84,11 @@ export function fonts(input: FontsInput): Plugin {
       if (!state.cacheDir) return
       const fontsDir = state.cacheDir
 
-      server.middlewares.use('/@pyyupsk/fonts', (_req, res, next) => {
+      const serveFontsCss = (
+        _req: unknown,
+        res: import('node:http').ServerResponse,
+        next: () => void,
+      ) => {
         if (!state.config) return next()
         const assetMap: Record<string, string> = {}
         for (const files of Object.values(state.filesMap)) {
@@ -87,7 +99,10 @@ export function fonts(input: FontsInput): Plugin {
         const css = generateCss(state.config.families, state.filesMap, assetMap, state.metricsMap)
         res.setHeader('Content-Type', 'text/css')
         res.end(css)
-      })
+      }
+
+      server.middlewares.use('/@pyyupsk/fonts', serveFontsCss)
+      server.middlewares.use('/fonts.css', serveFontsCss)
 
       server.middlewares.use('/__fonts', (req, res, next) => {
         const filename = req.url?.slice(1)
