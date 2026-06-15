@@ -1,7 +1,7 @@
 import type { AstroIntegration } from 'astro'
 
-import { fonts as fontsPlugin } from './index'
-import type { FontsInput } from './types'
+import { fonts as fontsPlugin } from '../index'
+import type { FontsInput } from '../types'
 
 export function fonts(input: FontsInput): AstroIntegration {
   return {
