@@ -11,4 +11,5 @@ export default defineConfig({
   clean: true,
   sourcemap: false,
   copy: [{ from: 'src/client.d.ts', to: 'dist' }],
+  deps: { neverBundle: ['vite'] },
 })

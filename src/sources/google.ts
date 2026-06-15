@@ -23,13 +23,22 @@ const RE_UNICODE_RANGE = /unicode-range:\s*([^;]+)/
 export function buildGoogleFontsUrl(family: NormalizedFamily): string {
   const isVariable = family.weights.includes('variable')
   const hasItalic = family.styles.includes('italic')
+  const extraAxes = family.axes.filter((a) => a !== 'wght' && a !== 'ital').toSorted()
 
   let familyParam: string
 
   if (isVariable) {
-    familyParam = hasItalic
-      ? `${family.family}:ital,wght@0,${VARIABLE_RANGE};1,${VARIABLE_RANGE}`
-      : `${family.family}:wght@${VARIABLE_RANGE}`
+    const axisNames = [...(hasItalic ? ['ital'] : []), ...extraAxes, 'wght'].join(',')
+    const axisDefaults = extraAxes.map((a) => (a === 'opsz' ? '8' : '0')).join(',')
+    if (hasItalic) {
+      const prefix = extraAxes.length ? `0,${axisDefaults},` : '0,'
+      const prefixI = extraAxes.length ? `1,${axisDefaults},` : '1,'
+      familyParam = `${family.family}:${axisNames}@${prefix}${VARIABLE_RANGE};${prefixI}${VARIABLE_RANGE}`
+    } else if (extraAxes.length) {
+      familyParam = `${family.family}:${axisNames}@${axisDefaults},${VARIABLE_RANGE}`
+    } else {
+      familyParam = `${family.family}:wght@${VARIABLE_RANGE}`
+    }
   } else {
     const numericWeights = family.weights.filter((w): w is number => typeof w === 'number')
 

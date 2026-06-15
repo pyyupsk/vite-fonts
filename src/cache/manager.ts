@@ -1,5 +1,5 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { basename, join } from 'node:path'
 
 import { hashConfig } from '@/config/hash'
 import { fontNotFoundError, networkError } from '@/errors/messages'
@@ -41,6 +41,33 @@ function familyHash(family: NormalizedFamily, source: FontSource): string {
     families: [family],
   }
   return hashConfig(config)
+}
+
+function handleLocalFamily(
+  family: NormalizedFamily,
+  cacheDir: string,
+): [null, { files: string[]; fontFiles: FontFile[] }] {
+  const logger = getLogger()
+  const files: string[] = []
+  const fontFiles: FontFile[] = []
+
+  for (const local of family.local) {
+    const filename = basename(local.path)
+    const dest = join(cacheDir, filename)
+    copyFileSync(local.path, dest)
+    if (!files.includes(filename)) files.push(filename)
+    fontFiles.push({
+      url: local.path,
+      filename,
+      family: family.family,
+      weight: local.weight,
+      style: local.style ?? 'normal',
+      subset: 'local',
+    })
+  }
+
+  logger.info(`"${family.family}" loaded from local files (${files.length} files)`)
+  return [null, { files, fontFiles }]
 }
 
 async function downloadFamily(
@@ -102,7 +129,10 @@ export async function ensureFonts(
       continue
     }
 
-    const [err, result] = await downloadFamily(family, cacheDir)
+    const isLocalOnly = family.local.length > 0
+    const [err, result] = isLocalOnly
+      ? handleLocalFamily(family, cacheDir)
+      : await downloadFamily(family, cacheDir)
     if (err) return [err, null]
 
     manifest.families[family.key] = { hash, files: result.files, fontFiles: result.fontFiles }
