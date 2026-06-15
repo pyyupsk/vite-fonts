@@ -1,7 +1,7 @@
 import type { AstroIntegration } from 'astro'
 
-import { fonts as fontsPlugin } from '../index'
-import type { FontsInput } from '../types'
+import { fonts as fontsPlugin } from '../../index'
+import type { FontsInput } from '../../types'
 
 export function fonts(input: FontsInput): AstroIntegration {
   return {
@@ -10,7 +10,7 @@ export function fonts(input: FontsInput): AstroIntegration {
       'astro:config:setup': ({ updateConfig, addMiddleware }) => {
         updateConfig({ vite: { plugins: [fontsPlugin(input) as any] } })
         addMiddleware({
-          entrypoint: '@pyyupsk/vite-fonts/middleware',
+          entrypoint: '@pyyupsk/vite-fonts/astro/middleware',
           order: 'pre',
         })
       },

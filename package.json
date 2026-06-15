@@ -19,9 +19,9 @@
       "import": "./dist/astro.js",
       "types": "./dist/astro.d.ts"
     },
-    "./middleware": {
-      "import": "./dist/middleware.js",
-      "types": "./dist/middleware.d.ts"
+    "./astro/middleware": {
+      "import": "./dist/astro/middleware.js",
+      "types": "./dist/astro/middleware.d.ts"
     },
     "./client": {
       "types": "./dist/client.d.ts"

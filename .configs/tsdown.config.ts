@@ -3,8 +3,8 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
-    astro: 'src/frameworks/astro.ts',
-    middleware: 'src/middleware.ts',
+    astro: 'src/frameworks/astro/index.ts',
+    'astro/middleware': 'src/frameworks/astro/middleware.ts',
     'cli/index': 'src/cli/index.ts',
   },
   format: ['esm'],
