@@ -16,6 +16,12 @@ import { handleTransformIndexHtml } from './hooks/transform-html'
 
 export type { PluginState } from './hooks/state'
 
+/**
+ * Vite plugin that downloads and self-hosts web fonts at build time.
+ *
+ * @param input - Font families to load. Accepts a family name, array of names, or full options object.
+ * @returns Vite plugin option to pass to `plugins` in your Vite config.
+ */
 export function fonts(input: FontsInput): PluginOption {
   const state = createPluginState()
 
