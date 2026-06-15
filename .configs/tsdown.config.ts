@@ -7,6 +7,7 @@ export default defineConfig({
     'astro/middleware': '../src/frameworks/astro/middleware.ts',
     'cli/index': '../src/cli/index.ts',
   },
+  outDir: '../dist',
   format: ['esm'],
   outExtensions: () => ({ js: '.js', dts: '.d.ts' }),
   dts: true,
