@@ -15,10 +15,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pyyupsk/vite-fonts.git"
+    "url": "git+https://github.com/pyyupsk/vite-fonts.git"
   },
   "bin": {
-    "vite-fonts": "./dist/cli/index.js"
+    "vite-fonts": "dist/cli/index.js"
   },
   "files": [
     "dist"
