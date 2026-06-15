@@ -28,17 +28,17 @@
     }
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown --config .configs/tsdown.config.ts",
     "check": "bun run lint && bun run format:check",
-    "format": "oxfmt .",
-    "format:check": "oxfmt . --check",
+    "format": "oxfmt . --config .configs/oxfmtrc.json",
+    "format:check": "oxfmt . --config .configs/oxfmtrc.json --check",
     "generate:fonts": "bun scripts/generate-fonts.ts",
     "generate:metrics": "bun scripts/generate-metrics.ts",
-    "lint": "oxlint .",
-    "lint:fix": "oxlint . --fix",
+    "lint": "oxlint . --config .configs/oxlintrc.json",
+    "lint:fix": "oxlint . --config .configs/oxlintrc.json --fix",
     "prepare": "nit install",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run --config .configs/vitest.config.ts",
+    "test:watch": "vitest --config .configs/vitest.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -72,7 +72,7 @@
   "nit": {
     "hooks": {
       "pre-commit": "bun run check",
-      "commit-msg": "bunx commitlint --edit $1"
+      "commit-msg": "bunx commitlint --edit $1 -g .configs/commitlint.config.ts"
     }
   }
 }
