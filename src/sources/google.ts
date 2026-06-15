@@ -20,7 +20,11 @@ const RE_WEIGHT = /font-weight:\s*([^\s;]+)/
 const RE_STYLE = /font-style:\s*([^\s;]+)/
 const RE_UNICODE_RANGE = /unicode-range:\s*([^;]+)/
 
-export function buildGoogleFontsUrl(family: NormalizedFamily): string {
+// fallow-ignore-next-line code-duplication
+export function buildGoogleFontsUrl(
+  family: NormalizedFamily,
+  variableRange = VARIABLE_RANGE,
+): string {
   const isVariable = family.weights.includes('variable')
   const hasItalic = family.styles.includes('italic')
   const extraAxes = family.axes.filter((a) => a !== 'wght' && a !== 'ital').toSorted()
@@ -33,11 +37,11 @@ export function buildGoogleFontsUrl(family: NormalizedFamily): string {
     if (hasItalic) {
       const prefix = extraAxes.length ? `0,${axisDefaults},` : '0,'
       const prefixI = extraAxes.length ? `1,${axisDefaults},` : '1,'
-      familyParam = `${family.family}:${axisNames}@${prefix}${VARIABLE_RANGE};${prefixI}${VARIABLE_RANGE}`
+      familyParam = `${family.family}:${axisNames}@${prefix}${variableRange};${prefixI}${variableRange}`
     } else if (extraAxes.length) {
-      familyParam = `${family.family}:${axisNames}@${axisDefaults},${VARIABLE_RANGE}`
+      familyParam = `${family.family}:${axisNames}@${axisDefaults},${variableRange}`
     } else {
-      familyParam = `${family.family}:wght@${VARIABLE_RANGE}`
+      familyParam = `${family.family}:wght@${variableRange}`
     }
   } else {
     const numericWeights = family.weights.filter((w): w is number => typeof w === 'number')
@@ -56,6 +60,39 @@ export function buildGoogleFontsUrl(family: NormalizedFamily): string {
   }
 
   return `${BASE_URL}?family=${encodeURIComponent(familyParam)}&display=${family.display}`
+}
+
+const METADATA_BASE = 'https://fonts.google.com/metadata/fonts'
+
+interface GoogleFontAxis {
+  tag: string
+  min: number
+  max: number
+  defaultValue: number
+}
+
+interface GoogleFontMetadata {
+  axes: GoogleFontAxis[]
+}
+
+export async function fetchGoogleFontMetadata(
+  familyName: string,
+): Promise<GoogleFontMetadata | null> {
+  try {
+    const res = await fetch(`${METADATA_BASE}/${encodeURIComponent(familyName)}`)
+    if (!res.ok) return null
+    const text = await res.text()
+    // Response is prefixed with )]}' to prevent JSON hijacking
+    return JSON.parse(text.replace(/^\)\]\}'\n/, '')) as GoogleFontMetadata
+  } catch {
+    return null
+  }
+}
+
+export function variableRangeFromMetadata(metadata: GoogleFontMetadata): string {
+  const wght = metadata.axes.find((a) => a.tag === 'wght')
+  if (!wght) return VARIABLE_RANGE
+  return `${Math.round(wght.min)}..${Math.round(wght.max)}`
 }
 
 export function parseGoogleFontsCss(css: string, subsets = ['latin']): FontFile[] {

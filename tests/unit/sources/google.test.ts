@@ -1,10 +1,15 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { normalize } from '@/config/normalize'
-import { buildGoogleFontsUrl, parseGoogleFontsCss } from '@/sources/google'
+import {
+  buildGoogleFontsUrl,
+  fetchGoogleFontMetadata,
+  parseGoogleFontsCss,
+  variableRangeFromMetadata,
+} from '@/sources/google'
 
 const FIXTURE_CSS = readFileSync(resolve(__dirname, '../../fixtures/inter-400-700.css'), 'utf8')
 
@@ -43,6 +48,54 @@ describe('buildGoogleFontsUrl', () => {
     expect(url).toContain('ital,wght')
     expect(url).toContain('0,400')
     expect(url).toContain('1,400')
+  })
+})
+
+describe('variableRangeFromMetadata', () => {
+  it('returns wght min..max from metadata axes', () => {
+    const range = variableRangeFromMetadata({
+      axes: [
+        { tag: 'opsz', min: 8, max: 60, defaultValue: 14 },
+        { tag: 'wght', min: 200, max: 900, defaultValue: 400 },
+      ],
+    })
+    expect(range).toBe('200..900')
+  })
+
+  it('falls back to 100..900 when no wght axis', () => {
+    const range = variableRangeFromMetadata({ axes: [] })
+    expect(range).toBe('100..900')
+  })
+})
+
+describe('fetchGoogleFontMetadata', () => {
+  it('returns parsed metadata on success', async () => {
+    const payload = { axes: [{ tag: 'wght', min: 200, max: 900, defaultValue: 400 }] }
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        text: () => Promise.resolve(`)]}'\n${JSON.stringify(payload)}`),
+      }),
+    )
+
+    const result = await fetchGoogleFontMetadata('Source Serif 4')
+    expect(result).toEqual(payload)
+    vi.unstubAllGlobals()
+  })
+
+  it('returns null on non-ok response', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }))
+    const result = await fetchGoogleFontMetadata('Unknown Font')
+    expect(result).toBeNull()
+    vi.unstubAllGlobals()
+  })
+
+  it('returns null on network error', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network')))
+    const result = await fetchGoogleFontMetadata('Source Serif 4')
+    expect(result).toBeNull()
+    vi.unstubAllGlobals()
   })
 })
 
