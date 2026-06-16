@@ -5,6 +5,7 @@ import { hashConfig } from '@/config/hash'
 import { fontNotFoundError, networkError } from '@/errors/messages'
 import { clr, getLogger } from '@/logger'
 import { buildBunnyFontsUrl, parseBunnyFontsCss } from '@/sources/bunny'
+import { buildFontsourceFiles, fetchFontsourceMetadata } from '@/sources/fontsource'
 import {
   buildGoogleFontsUrl,
   fetchGoogleFontMetadata,
@@ -77,12 +78,36 @@ function handleLocalFamily(
   return [null, { files, fontFiles }]
 }
 
+async function downloadFontsourceFamily(
+  family: NormalizedFamily,
+  cacheDir: string,
+): Promise<[Error, null] | [null, { files: string[]; fontFiles: FontFile[] }]> {
+  const metadata = await fetchFontsourceMetadata(family.family)
+  if (!metadata) return [fontNotFoundError(family.family, 404), null]
+
+  const fontFiles = buildFontsourceFiles(family, metadata)
+  const written: string[] = []
+
+  for (const file of fontFiles) {
+    const [err, bytes] = await downloadFont(file.url)
+    if (err) return [err, null]
+
+    const dest = join(cacheDir, file.filename)
+    writeFileSync(dest, bytes)
+    if (!written.includes(file.filename)) written.push(file.filename)
+  }
+
+  return [null, { files: written, fontFiles }]
+}
+
 // fallow-ignore-next-line complexity
 async function downloadFamily(
   family: NormalizedFamily,
   cacheDir: string,
   source: FontSource,
 ): Promise<[Error, null] | [null, { files: string[]; fontFiles: FontFile[] }]> {
+  if (source === 'fontsource') return downloadFontsourceFamily(family, cacheDir)
+
   const isBunny = source === 'bunny'
   const isVariable = family.weights.includes('variable')
 
@@ -137,7 +162,8 @@ export async function ensureFonts(
 
   const manifest: CacheManifest = readManifest(cacheDir) ?? { version: 1, families: {} }
   const logger = getLogger()
-  const sourceName = source === 'bunny' ? 'Bunny Fonts' : 'Google Fonts'
+  const sourceName =
+    source === 'bunny' ? 'Bunny Fonts' : source === 'fontsource' ? 'Fontsource' : 'Google Fonts'
 
   const cached: string[] = []
   const downloaded: string[] = []

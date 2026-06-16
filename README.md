@@ -4,7 +4,7 @@ Downloads and self-hosts web fonts at build time — no runtime CDN calls, no CL
 
 ## Features
 
-- Self-hosts fonts from Google Fonts or Bunny Fonts (downloaded at build time, served from your output)
+- Self-hosts fonts from Google Fonts, Bunny Fonts, or Fontsource (downloaded at build time, served from your output)
 - Generates `@font-face` CSS with `size-adjust` fallback metrics to eliminate CLS
 - Injects `<link rel="preload">` tags automatically
 - CSS variable per family — syncs with Tailwind v4 `@theme` automatically
@@ -74,7 +74,7 @@ fonts({
 
 ```ts
 fonts({
-  source: 'google', // 'google' | 'bunny'
+  source: 'google', // 'google' | 'bunny' | 'fontsource'
   inject: 'auto', // 'auto' | 'manual' | false
 
   families: {
