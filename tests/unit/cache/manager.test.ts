@@ -90,3 +90,52 @@ describe('ensureFonts', () => {
     expect(json.version).toBe(1)
   })
 })
+
+describe('ensureFonts with fontsource source', () => {
+  const METADATA = {
+    id: 'inter',
+    family: 'Inter',
+    subsets: ['latin'],
+    weights: [400],
+    styles: ['normal'],
+    variable: true,
+    unicodeRange: { latin: 'U+0000-00FF' },
+    variants: {
+      400: {
+        normal: {
+          latin: {
+            url: {
+              woff2:
+                'https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.woff2',
+              woff: '',
+            },
+          },
+        },
+      },
+    },
+  }
+
+  beforeEach(() => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(METADATA) }),
+    )
+  })
+
+  it('downloads via metadata lookup, no css parsing', async () => {
+    const { families } = normalize('Inter')
+    const [err, manifest] = await ensureFonts(families, 'fontsource', cacheDir)
+
+    expect(err).toBeNull()
+    const entry = manifest!.families['inter']
+    expect(entry!.files).toEqual(['inter-400-normal-latin.woff2'])
+  })
+
+  it('errors when metadata fetch fails', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }))
+    const { families } = normalize('Inter')
+    const [err] = await ensureFonts(families, 'fontsource', cacheDir)
+
+    expect(err).not.toBeNull()
+  })
+})
