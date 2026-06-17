@@ -16,7 +16,7 @@ const BASE_URL = 'https://fonts.googleapis.com/css2'
 const RE_BLOCK = /\/\*\s*([^*]+?)\s*\*\/\s*(@font-face\s*\{[^}]+\})/g
 const RE_URL = /url\(([^)]+)\)/
 const RE_FAMILY = /font-family:\s*['"]?([^'";]+)['"]?/
-const RE_WEIGHT = /font-weight:\s*([^\s;]+)/
+const RE_WEIGHT = /font-weight:\s*(\d+(?:\s+\d+)?)/
 const RE_STYLE = /font-style:\s*([^\s;]+)/
 const RE_UNICODE_RANGE = /unicode-range:\s*([^;]+)/
 
@@ -110,7 +110,8 @@ export function parseGoogleFontsCss(css: string, subsets = ['latin']): FontFile[
 
     const familySlug = family.toLowerCase().replace(/\s+/g, '-')
     const subsetSlug = subset.replace(/[^a-z0-9]/g, '-')
-    const filename = `${familySlug}-${weight}-${style}-${subsetSlug}.woff2`
+    const weightSlug = String(weight).replace(/\s+/g, '-')
+    const filename = `${familySlug}-${weightSlug}-${style}-${subsetSlug}.woff2`
 
     results.push({ url, filename, family, weight, style, subset, unicodeRange })
   }
