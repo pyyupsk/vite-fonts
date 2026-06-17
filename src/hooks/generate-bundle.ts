@@ -49,20 +49,11 @@ export function handleGenerateBundle(
 
   // 2. Generate fonts CSS with resolved asset paths
   const css = generateCss(state.config.families, state.filesMap, assetMap, state.metricsMap)
-
-  // 3a. inject:false — write directly to disk (bypasses Rollup/adapter asset pruning)
-  //     inject:auto — emit as tracked Rollup asset (gets content hash, referenced in closeBundle)
-  let cssFinalName: string
-  if (state.config.inject === false) {
-    const outDir = options.dir ?? ''
-    if (outDir) {
-      mkdirSync(outDir, { recursive: true })
-      writeFileSync(join(outDir, 'fonts.css'), css)
-    }
-    cssFinalName = 'fonts.css'
-  } else {
-    const cssRefId = this.emitFile({ type: 'asset', name: 'fonts.css', source: css })
-    cssFinalName = this.getFileName(cssRefId)
+  const cssFinalName = 'fonts.css'
+  const outDir = options.dir ?? ''
+  if (outDir) {
+    mkdirSync(outDir, { recursive: true })
+    writeFileSync(join(outDir, cssFinalName), css)
   }
 
   // 4. Build HTML inject snippet — stored for closeBundle to apply to HTML files on disk

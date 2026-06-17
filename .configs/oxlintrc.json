@@ -21,7 +21,7 @@
       }
     ]
   },
-  "ignorePatterns": ["dist", "node_modules", "demo"],
+  "ignorePatterns": ["dist", "node_modules", "demo", "docs"],
   "overrides": [
     {
       "files": ["src/cli/**"],
