@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.1.1...vite-fonts-v0.2.0) (2026-06-17)
+
+
+### ✨ Features
+
+* add fontsource as a font source ([#6](https://github.com/pyyupsk/vite-fonts/issues/6)) ([73d2b9c](https://github.com/pyyupsk/vite-fonts/commit/73d2b9cc1c5916ddcb3bb670ceba5df3a1e5e38d))
+
+
+### 🐛 Bug Fixes
+
+* preserve variable font weight range and emit fonts.css to disk ([#8](https://github.com/pyyupsk/vite-fonts/issues/8)) ([965e185](https://github.com/pyyupsk/vite-fonts/commit/965e18538142ce1925429fa99bceee7fa73f7d64))
+
 ## [0.1.1](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.1.0...vite-fonts-v0.1.1) (2026-06-15)
 
 ### 🐛 Bug Fixes
