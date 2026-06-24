@@ -12,7 +12,6 @@ const STATIC_METADATA: PyyupskMetadata = {
   family: {
     id: 'lobster',
     name: 'Lobster',
-    isVariable: false,
     wghtMin: null,
     wghtMax: null,
   },
@@ -32,7 +31,6 @@ const VARIABLE_METADATA: PyyupskMetadata = {
   family: {
     id: 'inter',
     name: 'Inter',
-    isVariable: true,
     wghtMin: 100,
     wghtMax: 900,
   },
@@ -113,5 +111,12 @@ describe('buildPyyupskFiles', () => {
   it('throws when family has no variable font', () => {
     const family = normalize(['Lobster:variable']).families[0]! // nosonar - noUncheckedIndexedAccess makes [0] T|undefined; ! is correct
     expect(() => buildPyyupskFiles(family, STATIC_METADATA)).toThrow(/does not provide a variable/)
+  })
+
+  it('throws when requesting static weights from a variable-only family', () => {
+    const family = normalize(['Inter']).families[0]! // nosonar - noUncheckedIndexedAccess makes [0] T|undefined; ! is correct
+    expect(() => buildPyyupskFiles(family, VARIABLE_METADATA)).toThrow(
+      /only provides .* as a variable font/,
+    )
   })
 })
