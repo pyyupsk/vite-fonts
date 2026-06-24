@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.2.0...vite-fonts-v0.3.0) (2026-06-24)
+
+
+### ✨ Features
+
+* add pyyupsk font source ([#9](https://github.com/pyyupsk/vite-fonts/issues/9)) ([5eaf290](https://github.com/pyyupsk/vite-fonts/commit/5eaf29088c9f62f8ce62b7ae77423802663dc999))
+
 ## [0.2.0](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.1.1...vite-fonts-v0.2.0) (2026-06-17)
 
 ### ✨ Features
