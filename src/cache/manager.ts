@@ -13,9 +13,17 @@ import {
   variableRangeFromMetadata,
 } from '@/sources/google'
 import type { FontFile } from '@/sources/google'
+import { buildPyyupskFiles, fetchPyyupskMetadata } from '@/sources/pyyupsk'
 import type { FontsConfig, FontSource, NormalizedFamily } from '@/types'
 
 import { downloadFont } from './download'
+
+const SOURCE_NAMES: Record<FontSource, string> = {
+  google: 'Google Fonts',
+  bunny: 'Bunny Fonts',
+  fontsource: 'Fontsource',
+  pyyupsk: 'Fonts by pyyupsk',
+}
 
 const fmt = (names: string[]) =>
   names.map((n) => `${clr.bold}${n}${clr.reset}`).join(`${clr.dim}, ${clr.reset}`)
@@ -100,6 +108,28 @@ async function downloadFontsourceFamily(
   return [null, { files: written, fontFiles }]
 }
 
+async function downloadPyyupskFamily(
+  family: NormalizedFamily,
+  cacheDir: string,
+): Promise<[Error, null] | [null, { files: string[]; fontFiles: FontFile[] }]> {
+  const metadata = await fetchPyyupskMetadata(family.family)
+  if (!metadata) return [fontNotFoundError(family.family, 404), null]
+
+  const fontFiles = buildPyyupskFiles(family, metadata)
+  const written: string[] = []
+
+  for (const file of fontFiles) {
+    const [err, bytes] = await downloadFont(file.url)
+    if (err) return [err, null]
+
+    const dest = join(cacheDir, file.filename)
+    writeFileSync(dest, bytes)
+    if (!written.includes(file.filename)) written.push(file.filename)
+  }
+
+  return [null, { files: written, fontFiles }]
+}
+
 // fallow-ignore-next-line complexity
 async function downloadFamily(
   family: NormalizedFamily,
@@ -107,6 +137,7 @@ async function downloadFamily(
   source: FontSource,
 ): Promise<[Error, null] | [null, { files: string[]; fontFiles: FontFile[] }]> {
   if (source === 'fontsource') return downloadFontsourceFamily(family, cacheDir)
+  if (source === 'pyyupsk') return downloadPyyupskFamily(family, cacheDir)
 
   const isBunny = source === 'bunny'
   const isVariable = family.weights.includes('variable')
@@ -162,8 +193,7 @@ export async function ensureFonts(
 
   const manifest: CacheManifest = readManifest(cacheDir) ?? { version: 1, families: {} }
   const logger = getLogger()
-  const sourceName =
-    source === 'bunny' ? 'Bunny Fonts' : source === 'fontsource' ? 'Fontsource' : 'Google Fonts'
+  const sourceName = SOURCE_NAMES[source]
 
   const cached: string[] = []
   const downloaded: string[] = []

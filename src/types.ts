@@ -2,7 +2,7 @@
 export type FontDisplay = 'auto' | 'block' | 'swap' | 'fallback' | 'optional'
 
 /** Font provider to download from. */
-export type FontSource = 'google' | 'bunny' | 'fontsource'
+export type FontSource = 'google' | 'bunny' | 'fontsource' | 'pyyupsk'
 
 /**
  * Controls how the generated CSS is injected into the page.
