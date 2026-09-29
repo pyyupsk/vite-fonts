@@ -2,11 +2,10 @@
 
 ## [0.3.1](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.3.0...vite-fonts-v0.3.1) (2026-09-29)
 
-
 ### 🐛 Bug Fixes
 
-* bump astro to ^7.2.8 for security patches ([#14](https://github.com/pyyupsk/vite-fonts/issues/14)) ([01dd52d](https://github.com/pyyupsk/vite-fonts/commit/01dd52d5cb3df8f15155707a4f59e24de70d99bb))
-* preload fonts in nested Astro static pages ([#12](https://github.com/pyyupsk/vite-fonts/issues/12)) ([1f0acf9](https://github.com/pyyupsk/vite-fonts/commit/1f0acf9a9edf1ba28355be24f1a4437549dc7d8e))
+- bump astro to ^7.2.8 for security patches ([#14](https://github.com/pyyupsk/vite-fonts/issues/14)) ([01dd52d](https://github.com/pyyupsk/vite-fonts/commit/01dd52d5cb3df8f15155707a4f59e24de70d99bb))
+- preload fonts in nested Astro static pages ([#12](https://github.com/pyyupsk/vite-fonts/issues/12)) ([1f0acf9](https://github.com/pyyupsk/vite-fonts/commit/1f0acf9a9edf1ba28355be24f1a4437549dc7d8e))
 
 ## [0.3.0](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.2.0...vite-fonts-v0.3.0) (2026-06-24)
 
