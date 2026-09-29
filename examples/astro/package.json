@@ -9,7 +9,7 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@pyyupsk/vite-fonts": "link:@pyyupsk/vite-fonts",
+    "@pyyupsk/vite-fonts": "link:../..",
     "astro": "^7.2.8"
   },
   "engines": {
