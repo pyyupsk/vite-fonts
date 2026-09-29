@@ -2,9 +2,8 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { generateCss } from '@/css/generate'
-import type { FontFile } from '@/sources/google'
-import type { NormalizedFamily } from '@/types'
 
+import { selectPreloadFiles } from './inject-html'
 import type { PluginState } from './state'
 
 interface BundleContext {
@@ -13,15 +12,6 @@ interface BundleContext {
 }
 
 type OutputBundle = Record<string, { type: string; source?: string | Uint8Array }>
-
-function preloadFiles(family: NormalizedFamily, files: FontFile[]): FontFile[] {
-  if (family.preload === false) return []
-  if (family.preload === true) {
-    const first = files.find((f) => f.weight === 400) ?? files[0]
-    return first ? [first] : []
-  }
-  return files.filter((f) => (family.preload as number[]).includes(f.weight as number))
-}
 
 export function handleGenerateBundle(
   this: BundleContext,
@@ -59,7 +49,7 @@ export function handleGenerateBundle(
   // 4. Build HTML inject snippet — stored for closeBundle to apply to HTML files on disk
   const preloadTags = state.config.families
     .flatMap((family) =>
-      preloadFiles(family, state.filesMap[family.key] ?? []).map((file) => {
+      selectPreloadFiles(family, state.filesMap[family.key] ?? []).map((file) => {
         const href = assetMap[file.filename] ?? file.filename
         return `    <link rel="preload" as="font" type="font/woff2" href="${href}" crossorigin>`
       }),

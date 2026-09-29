@@ -1,4 +1,4 @@
-import { createReadStream, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { createReadStream } from 'node:fs'
 import { join } from 'node:path'
 
 import type { PluginOption } from 'vite'
@@ -9,6 +9,7 @@ import type { FontsInput } from '@/types'
 import { handleBuildStart } from './hooks/build-start'
 import { handleConfigResolved } from './hooks/config-resolved'
 import { handleGenerateBundle } from './hooks/generate-bundle'
+import { injectSnippetIntoHtmlFiles } from './hooks/inject-html'
 import { handleLoad, handleLoadMeta } from './hooks/load'
 import { RESOLVED_ID, handleResolveId } from './hooks/resolve-id'
 import { createPluginState } from './hooks/state'
@@ -68,18 +69,7 @@ export function fonts(input: FontsInput): PluginOption {
       const envName = this.environment?.name
       if (envName && envName !== 'client') return
       if (state.command !== 'build' || !state.htmlInject || !state.outDir) return
-      const inject = state.htmlInject
-      let htmlFiles: string[]
-      try {
-        htmlFiles = readdirSync(state.outDir).filter((f) => f.endsWith('.html'))
-      } catch {
-        return
-      }
-      for (const file of htmlFiles) {
-        const path = join(state.outDir, file)
-        const html = readFileSync(path, 'utf8').replace('</head>', `${inject}\n  </head>`)
-        writeFileSync(path, html)
-      }
+      injectSnippetIntoHtmlFiles(state.outDir, state.htmlInject)
     },
 
     transformIndexHtml() {
