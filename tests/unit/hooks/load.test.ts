@@ -174,11 +174,17 @@ describe('handleLoadMeta', () => {
     expect(emitted.toSorted()).toEqual(FILES.map((f) => f.filename))
   })
 
+  it('meta emits only the preloaded files', () => {
+    const { ctx, emitted } = countingCtx()
+    handleLoadMeta(META_RESOLVED_ID, makeMetaState('build', [700]), ctx, 'ssr')
+    expect(emitted).toEqual(['inter-700-normal.woff2'])
+  })
+
   it('emits again per environment', () => {
     const state = makeMetaState('build', true)
     const { ctx, emitted } = countingCtx()
-    handleLoadMeta(META_RESOLVED_ID, state, ctx, 'client')
-    handleLoadMeta(META_RESOLVED_ID, state, ctx, 'ssr')
+    handleLoad(RESOLVED_ID, state, ctx, 'client')
+    handleLoad(RESOLVED_ID, state, ctx, 'ssr')
     expect(emitted).toHaveLength(FILES.length * 2)
   })
 })
