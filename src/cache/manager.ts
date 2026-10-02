@@ -1,4 +1,4 @@
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
 
 import { hashConfig } from '@/config/hash'
@@ -50,6 +50,19 @@ function readManifest(cacheDir: string): CacheManifest | null {
 
 function writeManifest(cacheDir: string, manifest: CacheManifest): void {
   writeFileSync(join(cacheDir, 'manifest.json'), JSON.stringify(manifest, null, 2))
+}
+
+function pruneCache(cacheDir: string, manifest: CacheManifest, families: NormalizedFamily[]): void {
+  const keys = new Set(families.map((f) => f.key))
+  for (const key of Object.keys(manifest.families)) {
+    if (!keys.has(key)) delete manifest.families[key]
+  }
+  const used = new Set(Object.values(manifest.families).flatMap((e) => e.files))
+  for (const entry of readdirSync(cacheDir, { withFileTypes: true })) {
+    if (entry.isFile() && entry.name !== 'manifest.json' && !used.has(entry.name)) {
+      rmSync(join(cacheDir, entry.name), { force: true })
+    }
+  }
 }
 
 function familyHash(family: NormalizedFamily, source: FontSource): string {
@@ -229,6 +242,7 @@ export async function ensureFonts(
   if (cached.length)
     logger.info(`${clr.green}✓${clr.reset} ${fmt(cached)} ${clr.dim}from cache${clr.reset}`)
 
+  pruneCache(cacheDir, manifest, families)
   writeManifest(cacheDir, manifest)
   return [null, manifest]
 }

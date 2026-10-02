@@ -20,8 +20,9 @@ export async function handleBuildStart(state: PluginState): Promise<Error | null
   const [err, manifest] = result
   if (err) return err
 
-  for (const [key, entry] of Object.entries(manifest.families)) {
-    state.filesMap[key] = entry.fontFiles ?? []
+  state.filesMap = {}
+  for (const family of state.config.families) {
+    state.filesMap[family.key] = manifest.families[family.key]?.fontFiles ?? []
   }
 
   await Promise.all(

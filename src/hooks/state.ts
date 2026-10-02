@@ -11,7 +11,7 @@ export interface PluginState {
   command: 'serve' | 'build'
   filesMap: Record<string, FontFile[]>
   metricsMap: Record<string, FontMetrics>
-  assetRefIds: Record<string, string>
+  assetRefIds: Record<string, Record<string, string>>
   htmlInject: string | null
 }
 

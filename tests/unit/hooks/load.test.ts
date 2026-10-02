@@ -1,7 +1,12 @@
-import { describe, expect, it } from 'vitest'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { normalize } from '@/config/normalize'
-import { handleLoad } from '@/hooks/load'
+import { handleGenerateBundle } from '@/hooks/generate-bundle'
+import { handleLoad, handleLoadMeta } from '@/hooks/load'
 import { META_RESOLVED_ID, RESOLVED_ID } from '@/hooks/resolve-id'
 import type { PluginState } from '@/hooks/state'
 import type { FontFile } from '@/sources/google'
@@ -69,5 +74,117 @@ describe('handleLoad', () => {
     state.filesMap = {}
     const css = await handleLoad(RESOLVED_ID, state, CTX)
     expect(css).toContain(':root')
+  })
+})
+
+function countingCtx() {
+  const emitted: string[] = []
+  const ctx = {
+    emitFile: (file: { name: string }) => {
+      emitted.push(file.name)
+      return `ref${emitted.length}`
+    },
+  }
+  return { ctx, emitted }
+}
+
+async function importMeta(code: string) {
+  const url = `data:text/javascript;base64,${Buffer.from(code).toString('base64')}`
+  return (await import(url)) as {
+    fonts: Record<string, { preloads: { href: string; type: string }[] }>
+    preloads: { href: string; type: string }[]
+  }
+}
+
+describe('handleLoadMeta', () => {
+  const FILES: FontFile[] = [400, 500, 700].map((weight) => ({
+    ...INTER_FILES[0]!,
+    filename: `inter-${weight}-normal.woff2`,
+    weight,
+  }))
+
+  let cacheDir: string
+
+  beforeEach(() => {
+    cacheDir = mkdtempSync(join(tmpdir(), 'vite-fonts-meta-'))
+    for (const f of FILES) writeFileSync(join(cacheDir, f.filename), f.filename)
+  })
+
+  afterEach(() => {
+    rmSync(cacheDir, { recursive: true, force: true })
+  })
+
+  function makeMetaState(command: 'serve' | 'build', preload: boolean | number[]): PluginState {
+    const state = makeState(command)
+    state.cacheDir = cacheDir
+    state.filesMap = { inter: FILES }
+    state.config!.families[0]!.preload = preload
+    return state
+  }
+
+  it('dev preloads use /__fonts/ hrefs', async () => {
+    const meta = await importMeta(
+      handleLoadMeta(META_RESOLVED_ID, makeMetaState('serve', true), CTX)!,
+    )
+    expect(meta.preloads).toEqual([{ href: '/__fonts/inter-400-normal.woff2', type: 'font/woff2' }])
+    expect(meta.fonts.inter!.preloads).toEqual(meta.preloads)
+  })
+
+  it('build preloads use Vite asset placeholders for the emitted files', async () => {
+    const { ctx, emitted } = countingCtx()
+    const meta = await importMeta(
+      handleLoadMeta(META_RESOLVED_ID, makeMetaState('build', true), ctx)!,
+    )
+    const ref = emitted.indexOf('inter-400-normal.woff2') + 1
+    expect(meta.preloads).toEqual([{ href: `__VITE_ASSET__ref${ref}__`, type: 'font/woff2' }])
+  })
+
+  it('drops duplicate hrefs when weights share one file', async () => {
+    const ctx = { emitFile: () => 'same' }
+    const meta = await importMeta(
+      handleLoadMeta(META_RESOLVED_ID, makeMetaState('build', [400, 700]), ctx)!,
+    )
+    expect(meta.preloads).toEqual([{ href: '__VITE_ASSET__same__', type: 'font/woff2' }])
+    expect(meta.fonts.inter!.preloads).toEqual(meta.preloads)
+  })
+
+  it('preload: false yields no preloads', async () => {
+    const meta = await importMeta(
+      handleLoadMeta(META_RESOLVED_ID, makeMetaState('serve', false), CTX)!,
+    )
+    expect(meta.preloads).toEqual([])
+  })
+
+  it('a weight list selects only those weights', async () => {
+    const meta = await importMeta(
+      handleLoadMeta(META_RESOLVED_ID, makeMetaState('serve', [500, 700]), CTX)!,
+    )
+    expect(meta.preloads.map((p) => p.href)).toEqual([
+      '/__fonts/inter-500-normal.woff2',
+      '/__fonts/inter-700-normal.woff2',
+    ])
+  })
+
+  it('emits each font once across meta, CSS and generateBundle', () => {
+    const state = makeMetaState('build', true)
+    const { ctx, emitted } = countingCtx()
+    handleLoadMeta(META_RESOLVED_ID, state, ctx)
+    handleLoad(RESOLVED_ID, state, ctx)
+    handleGenerateBundle.call({ ...ctx, getFileName: (id) => id }, {}, {}, state)
+    expect(emitted.toSorted()).toEqual(FILES.map((f) => f.filename))
+  })
+
+  it('meta emits only the preloaded files', () => {
+    const { ctx, emitted } = countingCtx()
+    handleLoadMeta(META_RESOLVED_ID, makeMetaState('build', [700]), ctx, 'ssr')
+    expect(emitted).toEqual(['inter-700-normal.woff2'])
+  })
+
+  it('emits again per environment', () => {
+    const state = makeMetaState('build', true)
+    const { ctx, emitted } = countingCtx()
+    handleLoad(RESOLVED_ID, state, ctx, 'client')
+    handleLoad(RESOLVED_ID, state, ctx, 'ssr')
+    expect(emitted).toHaveLength(FILES.length * 2)
   })
 })

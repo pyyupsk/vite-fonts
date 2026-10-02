@@ -40,6 +40,7 @@ export function fonts(input: FontsInput): PluginOption {
     },
 
     async buildStart() {
+      state.assetRefIds[this.environment?.name ?? 'client'] = {}
       const err = await handleBuildStart(state)
       if (err) throw err
     },
@@ -51,12 +52,10 @@ export function fonts(input: FontsInput): PluginOption {
       },
     },
 
-    async load(id) {
-      if (this.environment?.name !== 'client') {
-        if (id === RESOLVED_ID) return ''
-        return handleLoadMeta(id, state)
-      }
-      return (await handleLoad(id, state, this)) ?? handleLoadMeta(id, state)
+    load(id) {
+      const env = this.environment?.name ?? 'client'
+      if (id === RESOLVED_ID) return env === 'client' ? handleLoad(id, state, this, env) : ''
+      return handleLoadMeta(id, state, this, env)
     },
 
     generateBundle(options, bundle) {
