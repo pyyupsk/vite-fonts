@@ -18,7 +18,7 @@ export async function generateDts(
   const fontEntries = families
     .map((f) => {
       const weightsLiteral = f.weights.map((w) => JSON.stringify(w)).join('; ')
-      return `    ${JSON.stringify(f.key)}: { family: ${JSON.stringify(f.family)}; variable: ${JSON.stringify(f.variable)}; cssVar: ${JSON.stringify('var(' + f.variable + ')')}; weights: [${weightsLiteral}] };`
+      return `    ${JSON.stringify(f.key)}: { family: ${JSON.stringify(f.family)}; variable: ${JSON.stringify(f.variable)}; cssVar: ${JSON.stringify('var(' + f.variable + ')')}; weights: [${weightsLiteral}]; preloads: FontPreload[] };`
     })
     .join('\n')
 
@@ -29,9 +29,15 @@ declare module "@pyyupsk/fonts?url" {
   export default url;
 }
 declare module "@pyyupsk/fonts/meta" {
+  export interface FontPreload {
+    href: string;
+    type: "font/woff2";
+  }
   export const fonts: {
 ${fontEntries}
   };
+  /** Preload-selected font files of all families. */
+  export const preloads: FontPreload[];
 }
 `
 

@@ -48,6 +48,27 @@ export default defineConfig({
 })
 ```
 
+### SSR frameworks
+
+Frameworks such as TanStack Start, React Router and SvelteKit render HTML at request time. The plugin cannot add preload tags to that HTML. Render them in your document head from `@pyyupsk/fonts/meta`. Example for TanStack Start:
+
+```tsx
+// src/routes/__root.tsx
+import '@pyyupsk/fonts'
+import * as fonts from '@pyyupsk/fonts/meta'
+
+export const Route = createRootRoute({
+  head: () => ({
+    links: fonts.preloads.map((p) => ({
+      rel: 'preload',
+      as: 'font',
+      crossOrigin: 'anonymous',
+      ...p,
+    })),
+  }),
+})
+```
+
 ## Configuration
 
 Three input shapes, escalating in specificity.
@@ -105,19 +126,19 @@ fonts({
 
 ### `FamilyConfig` options
 
-| Option               | Type                       | Default           | Description                                  |
-| -------------------- | -------------------------- | ----------------- | -------------------------------------------- |
-| `family`             | `string`                   | —                 | Font name (required in map form)             |
-| `weights`            | `(number \| 'variable')[]` | `[400, 500, 700]` | Weights to download                          |
-| `styles`             | `('normal' \| 'italic')[]` | `['normal']`      | Font styles                                  |
-| `subsets`            | `string[]`                 | `['latin']`       | Unicode subsets                              |
-| `display`            | `FontDisplay`              | `'swap'`          | `font-display` value                         |
-| `axes`               | `string[]`                 | `[]`              | Variable font axes beyond `wght`             |
-| `variable`           | `string`                   | auto-derived      | CSS variable name, e.g. `--font-sans`        |
-| `fallback`           | `string[]`                 | auto by category  | Fallback font stack                          |
-| `adjustFontFallback` | `boolean \| string`        | `false`           | Generate `size-adjust` metrics to reduce CLS |
-| `preload`            | `boolean \| number[]`      | `false`           | Preload all weights or specific ones         |
-| `local`              | `LocalFontFile[]`          | `[]`              | Local font files (bypasses remote source)    |
+| Option               | Type                       | Default           | Description                                                   |
+| -------------------- | -------------------------- | ----------------- | ------------------------------------------------------------- |
+| `family`             | `string`                   | —                 | Font name (required in map form)                              |
+| `weights`            | `(number \| 'variable')[]` | `[400, 500, 700]` | Weights to download                                           |
+| `styles`             | `('normal' \| 'italic')[]` | `['normal']`      | Font styles                                                   |
+| `subsets`            | `string[]`                 | `['latin']`       | Unicode subsets                                               |
+| `display`            | `FontDisplay`              | `'swap'`          | `font-display` value                                          |
+| `axes`               | `string[]`                 | `[]`              | Variable font axes beyond `wght`                              |
+| `variable`           | `string`                   | auto-derived      | CSS variable name, e.g. `--font-sans`                         |
+| `fallback`           | `string[]`                 | auto by category  | Fallback font stack                                           |
+| `adjustFontFallback` | `boolean \| string`        | `false`           | Generate `size-adjust` metrics to reduce CLS                  |
+| `preload`            | `boolean \| number[]`      | `true`            | Preload weight 400 (or the first file), or the listed weights |
+| `local`              | `LocalFontFile[]`          | `[]`              | Local font files (bypasses remote source)                     |
 
 ## Virtual module
 
@@ -131,7 +152,10 @@ fonts.sans.family // "Inter"
 fonts.sans.variable // "--font-sans"
 fonts.sans.cssVar // "var(--font-sans)"
 fonts.sans.weights // [400, 500, 700]
+fonts.sans.preloads // [{ href: "/assets/inter-400-normal-<hash>.woff2", type: "font/woff2" }]
 ```
+
+`preloads` lists the files that the `preload` option selects. In a build, each `href` is the final hashed asset URL. In dev, it is `/__fonts/<file>`. The `preloads` export combines the files of all families.
 
 Family keys on `fonts.*` are **literal types** — typos become TS errors, autocomplete works.
 

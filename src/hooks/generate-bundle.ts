@@ -1,9 +1,10 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { generateCss } from '@/css/generate'
 
 import { selectPreloadFiles } from './inject-html'
+import { emitFontAssets } from './load'
 import type { PluginState } from './state'
 
 interface BundleContext {
@@ -24,17 +25,8 @@ export function handleGenerateBundle(
 
   // 1. Emit WOFF2 font files as assets
   const assetMap: Record<string, string> = {}
-  for (const files of Object.values(state.filesMap)) {
-    for (const file of files) {
-      if (assetMap[file.filename]) continue
-      try {
-        const bytes = readFileSync(join(state.cacheDir, file.filename))
-        const refId = this.emitFile({ type: 'asset', name: file.filename, source: bytes })
-        assetMap[file.filename] = '/' + this.getFileName(refId)
-      } catch {
-        // missing file — skip
-      }
-    }
+  for (const [filename, refId] of Object.entries(emitFontAssets(state, this, 'client'))) {
+    assetMap[filename] = '/' + this.getFileName(refId)
   }
 
   // 2. Generate fonts CSS with resolved asset paths

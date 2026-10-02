@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, rmSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -88,6 +88,18 @@ describe('ensureFonts', () => {
     const raw = readFileSync(join(cacheDir, 'manifest.json'), 'utf8')
     const json = JSON.parse(raw)
     expect(json.version).toBe(1)
+  })
+
+  it('prunes families and files no longer in config', async () => {
+    await ensureFonts(normalize(['Inter', 'Roboto']).families, 'google', cacheDir)
+    writeFileSync(join(cacheDir, 'stale.woff2'), '')
+
+    const [, manifest] = await ensureFonts(normalize('Inter').families, 'google', cacheDir)
+
+    expect(Object.keys(manifest!.families)).toEqual(['inter'])
+    expect(readdirSync(cacheDir).toSorted()).toEqual(
+      ['manifest.json', ...manifest!.families['inter']!.files].toSorted(),
+    )
   })
 })
 
