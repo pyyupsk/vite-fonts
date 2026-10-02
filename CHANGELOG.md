@@ -2,10 +2,9 @@
 
 ## [0.4.0](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.3.1...vite-fonts-v0.4.0) (2026-10-02)
 
-
 ### ✨ Features
 
-* expose font preload URLs in @pyyupsk/fonts/meta for SSR ([#18](https://github.com/pyyupsk/vite-fonts/issues/18)) ([e048d5f](https://github.com/pyyupsk/vite-fonts/commit/e048d5fd1a7f8c4bbffe1505a85a674a21e188c0))
+- expose font preload URLs in @pyyupsk/fonts/meta for SSR ([#18](https://github.com/pyyupsk/vite-fonts/issues/18)) ([e048d5f](https://github.com/pyyupsk/vite-fonts/commit/e048d5fd1a7f8c4bbffe1505a85a674a21e188c0))
 
 ## [0.3.1](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.3.0...vite-fonts-v0.3.1) (2026-09-29)
 
