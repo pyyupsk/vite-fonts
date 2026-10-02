@@ -56,6 +56,7 @@ Frameworks such as TanStack Start, React Router and SvelteKit render HTML at req
 // src/routes/__root.tsx
 import '@pyyupsk/fonts'
 import * as fonts from '@pyyupsk/fonts/meta'
+import { createRootRoute } from '@tanstack/react-router'
 
 export const Route = createRootRoute({
   head: () => ({
