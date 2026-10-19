@@ -5,21 +5,36 @@ import { join } from 'node:path'
 import type { FontFile } from '@/sources/google'
 import type { NormalizedFamily } from '@/types'
 
-export function selectPreloadFiles(family: NormalizedFamily, files: FontFile[]): FontFile[] {
+type Preloadable = Pick<FontFile, 'weight' | 'subset'>
+
+export function selectPreloadFiles<T extends Preloadable>(
+  family: NormalizedFamily,
+  files: T[],
+): T[] {
   if (family.preload === false) return []
   if (family.preload === true) {
-    const first = files.find((f) => f.weight === 400) ?? files[0]
-    return first ? [first] : []
+    const bySubset = new Map<string, T[]>()
+    for (const f of files) bySubset.set(f.subset, [...(bySubset.get(f.subset) ?? []), f])
+    return [...bySubset.values()].flatMap((group) => {
+      const pick = group.find((f) => coversWeight(f.weight, 400)) ?? group[0]
+      return pick ? [pick] : []
+    })
   }
-  if (!Array.isArray(family.preload)) return []
   const weights = family.preload
-  return files.filter((f) => weights.includes(f.weight as number))
+  return files.filter((f) => weights.some((w) => coversWeight(f.weight, w)))
+}
+
+function coversWeight(weight: number | string, target: number): boolean {
+  if (typeof weight === 'number') return weight === target
+  const [min, max = min] = weight.trim().split(/\s+/).map(Number)
+  return min !== undefined && max !== undefined && target >= min && target <= max
 }
 
 interface ParsedFontFace {
   family: string
   weight: string
   url: string
+  unicodeRange?: string
 }
 
 export function parseFontFaceBlocks(css: string): ParsedFontFace[] {
@@ -32,35 +47,21 @@ export function parseFontFaceBlocks(css: string): ParsedFontFace[] {
       block.match(/url\('([^']+)'\)/)?.[1] ??
       block.match(/url\("([^"]+)"\)/)?.[1] ??
       block.match(/url\(\s*([^)'"\s]+)\s*\)/)?.[1]
-    if (family && weight && url) out.push({ family, weight, url })
+    const unicodeRange = block.match(/unicode-range:\s*([^;]+);/)?.[1]?.trim()
+    if (family && weight && url)
+      out.push({ family, weight, url, ...(unicodeRange && { unicodeRange }) })
   }
   return out
-}
-
-function blockWeightMatches(blockWeight: string, target: number): boolean {
-  const nums = blockWeight.split(/\s+/).map(Number)
-  return nums.includes(target)
 }
 
 export function preloadHrefsFromCss(css: string, families: NormalizedFamily[]): string[] {
   const blocks = parseFontFaceBlocks(css)
   const hrefs: string[] = []
   for (const family of families) {
-    const own = blocks.filter((b) => b.family.toLowerCase() === family.family.toLowerCase())
     if (family.preload === false) continue
-    if (family.preload === true) {
-      const match = own.find((b) => blockWeightMatches(b.weight, 400)) ?? own[0]
-      if (match) hrefs.push(match.url)
-      continue
-    }
-    for (const b of own) {
-      if (
-        Array.isArray(family.preload) &&
-        family.preload.some((w) => blockWeightMatches(b.weight, w))
-      ) {
-        hrefs.push(b.url)
-      }
-    }
+    const own = blocks.filter((b) => b.family.toLowerCase() === family.family.toLowerCase())
+    const files = own.map((b) => ({ ...b, subset: b.unicodeRange ?? '' }))
+    for (const f of selectPreloadFiles(family, files)) hrefs.push(f.url)
   }
   return [...new Set(hrefs)]
 }
