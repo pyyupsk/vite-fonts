@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.4.0...vite-fonts-v0.4.1) (2026-10-19)
+
+
+### 🐛 Bug Fixes
+
+* preload every subset and variable weight ranges ([#20](https://github.com/pyyupsk/vite-fonts/issues/20)) ([9d5ccef](https://github.com/pyyupsk/vite-fonts/commit/9d5ccef5467f1231910aad702214ca30923a4629))
+
 ## [0.4.0](https://github.com/pyyupsk/vite-fonts/compare/vite-fonts-v0.3.1...vite-fonts-v0.4.0) (2026-10-02)
 
 ### ✨ Features
