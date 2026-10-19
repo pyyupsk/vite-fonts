@@ -12,6 +12,7 @@ import {
   injectSnippetIntoHtmlFiles,
   parseFontFaceBlocks,
   preloadHrefsFromCss,
+  selectPreloadFiles,
 } from '@/hooks/inject-html'
 
 const CSS = `@font-face {
@@ -98,6 +99,53 @@ describe('preloadHrefsFromCss', () => {
     expect(preloadHrefsFromCss(CSS, [...families, ...families])).toEqual([
       '/_astro/inter-400-abc123.woff2',
     ])
+  })
+})
+
+const VARIABLE_CSS = `@font-face {
+  font-family: 'Anuphan';
+  font-weight: 100 700;
+  src: url('/a/anuphan-thai.woff2') format('woff2');
+  unicode-range: U+0E01-0E5B;
+}
+
+@font-face {
+  font-family: 'Anuphan';
+  font-weight: 100 700;
+  src: url('/a/anuphan-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF;
+}`
+
+describe('variable fonts with several subsets', () => {
+  it('preload: true takes one file per subset from the CSS', () => {
+    const { families } = normalize(['Anuphan'])
+    expect(preloadHrefsFromCss(VARIABLE_CSS, families)).toEqual([
+      '/a/anuphan-thai.woff2',
+      '/a/anuphan-latin.woff2',
+    ])
+  })
+
+  it('a weight list matches a variable range that covers it', () => {
+    const { families } = normalize(['Anuphan'])
+    const listed = families.map((f) => ({ ...f, preload: [400] }))
+    expect(preloadHrefsFromCss(VARIABLE_CSS, listed)).toHaveLength(2)
+    const outside = families.map((f) => ({ ...f, preload: [900] }))
+    expect(preloadHrefsFromCss(VARIABLE_CSS, outside)).toEqual([])
+  })
+
+  it('selectPreloadFiles groups source files by subset', () => {
+    const { families } = normalize(['Anuphan'])
+    const family = families[0]!
+    const files = [
+      { weight: '100 700', subset: 'thai', url: 'thai' },
+      { weight: '100 700', subset: 'latin', url: 'latin' },
+    ]
+    expect(selectPreloadFiles(family, files).map((f) => f.url)).toEqual(['thai', 'latin'])
+    const statics = [
+      { weight: 300, subset: 'latin', url: 'l300' },
+      { weight: 400, subset: 'latin', url: 'l400' },
+    ]
+    expect(selectPreloadFiles(family, statics).map((f) => f.url)).toEqual(['l400'])
   })
 })
 

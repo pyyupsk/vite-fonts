@@ -127,19 +127,19 @@ fonts({
 
 ### `FamilyConfig` options
 
-| Option               | Type                       | Default           | Description                                                   |
-| -------------------- | -------------------------- | ----------------- | ------------------------------------------------------------- |
-| `family`             | `string`                   | —                 | Font name (required in map form)                              |
-| `weights`            | `(number \| 'variable')[]` | `[400, 500, 700]` | Weights to download                                           |
-| `styles`             | `('normal' \| 'italic')[]` | `['normal']`      | Font styles                                                   |
-| `subsets`            | `string[]`                 | `['latin']`       | Unicode subsets                                               |
-| `display`            | `FontDisplay`              | `'swap'`          | `font-display` value                                          |
-| `axes`               | `string[]`                 | `[]`              | Variable font axes beyond `wght`                              |
-| `variable`           | `string`                   | auto-derived      | CSS variable name, e.g. `--font-sans`                         |
-| `fallback`           | `string[]`                 | auto by category  | Fallback font stack                                           |
-| `adjustFontFallback` | `boolean \| string`        | `false`           | Generate `size-adjust` metrics to reduce CLS                  |
-| `preload`            | `boolean \| number[]`      | `true`            | Preload weight 400 (or the first file), or the listed weights |
-| `local`              | `LocalFontFile[]`          | `[]`              | Local font files (bypasses remote source)                     |
+| Option               | Type                       | Default           | Description                                                                                                                    |
+| -------------------- | -------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `family`             | `string`                   | —                 | Font name (required in map form)                                                                                               |
+| `weights`            | `(number \| 'variable')[]` | `[400, 500, 700]` | Weights to download                                                                                                            |
+| `styles`             | `('normal' \| 'italic')[]` | `['normal']`      | Font styles                                                                                                                    |
+| `subsets`            | `string[]`                 | `['latin']`       | Unicode subsets                                                                                                                |
+| `display`            | `FontDisplay`              | `'swap'`          | `font-display` value                                                                                                           |
+| `axes`               | `string[]`                 | `[]`              | Variable font axes beyond `wght`                                                                                               |
+| `variable`           | `string`                   | auto-derived      | CSS variable name, e.g. `--font-sans`                                                                                          |
+| `fallback`           | `string[]`                 | auto by category  | Fallback font stack                                                                                                            |
+| `adjustFontFallback` | `boolean \| string`        | `false`           | Generate `size-adjust` metrics to reduce CLS                                                                                   |
+| `preload`            | `boolean \| number[]`      | `true`            | Preload weight 400 (or the first file) of each subset, or the listed weights. A variable file covers every weight in its range |
+| `local`              | `LocalFontFile[]`          | `[]`              | Local font files (bypasses remote source)                                                                                      |
 
 ## Virtual module
 
